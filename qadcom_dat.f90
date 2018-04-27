@@ -16,7 +16,7 @@ MODULE QADCOM_DAT
   SAVE
 !
 ! GLOBAL VARIABLES
-    INTEGER(I4) :: NQAD = 4   ! Default No.pts for Gaussian quadrature
+    INTEGER(I4) :: NQAD = 1   ! Default No.pts for Gaussian quadrature
     REAL(R8)    :: RPIQAD     ! Reciprocal pi factor
     REAL(R8), ALLOCATABLE :: XQAD(:) ! cosine(angle) for quadrature
     REAL(R8), ALLOCATABLE :: WQAD(:) ! quadrature weights
