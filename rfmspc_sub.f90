@@ -3,7 +3,8 @@ CONTAINS
 SUBROUTINE RFMSPC ( ISPC, FAIL, ERRMSG ) 
 !
 ! VERSION
-!   01JUL17 AD F90 original. Checked.
+!   04FEB19 AD Remove subroutine SPCLOS - now part of SPCOUT
+!   29JAN18 AD F90 original.
 !
 ! DESCRIPTION
 !   RFM spectral calculation
@@ -28,7 +29,6 @@ SUBROUTINE RFMSPC ( ISPC, FAIL, ERRMSG )
     USE SPCINI_SUB ! Initialise widemesh grid
     USE SPCINT_SUB ! Interpolate spectra to regular grid
     USE SPCJAC_SUB ! Calculate Jacobians
-    USE SPCLOS_SUB ! Calculate LOS Jacobians
     USE SPCLUT_SUB ! Calculate the absorption using external Abs.Coeff. Tables.
     USE SPCOUT_SUB ! Write spectral output data
     USE SPCRAD_SUB ! Radiative transfer calculation
@@ -58,11 +58,13 @@ SUBROUTINE RFMSPC ( ISPC, FAIL, ERRMSG )
   CALL SPCINI ( ISPC, NWID, FAIL, ERRMSG )  
   IF ( FAIL ) RETURN
 ! 
+  IF ( .NOT. SHHFLG ) WRITE (*,*) 'I-RFMSPC: Widemesh calculation ...'
   CALL SPCWID ( FAIL, ERRMSG )
   IF ( FAIL ) RETURN
 !
   CALL SPCCTM  
 !
+  IF ( .NOT. SHHFLG ) WRITE (*,*) 'I-RFMSPC: Finemesh calculation ...'
   DO IWID = 1, NWID
     IF ( .NOT. SHHFLG ) WRITE (*,*) IWID, NWID
     CALL SPCGRD ( IWID )
@@ -75,9 +77,10 @@ SUBROUTINE RFMSPC ( ISPC, FAIL, ERRMSG )
     CALL SPCFIN ( IWID, FAIL, ERRMSG ) 
     IF ( FAIL ) RETURN
 !
+    IF ( SVDFLG ) CALL SPCSVD
+!
     IF ( LUTFLG ) THEN
-      CALL SPCSVD
-      CALL SPCLUT ( FAIL, ERRMSG )
+       CALL SPCLUT ( FAIL, ERRMSG )
       IF ( FAIL ) RETURN
     END IF   
 !
@@ -101,8 +104,6 @@ SUBROUTINE RFMSPC ( ISPC, FAIL, ERRMSG )
     CALL SPCINT 
   END IF
 !
-  IF ( LOSFLG ) CALL SPCLOS 
-! 
   CALL SPCOUT ( ISPC, FAIL, ERRMSG )
 !
   CALL SPCDAL 

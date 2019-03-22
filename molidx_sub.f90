@@ -3,6 +3,8 @@ CONTAINS
 SUBROUTINE MOLIDX ( IDX, MOL, ADDNEW )
 !
 ! VERSION
+!   12JUL18 AD Assign #60 GeH4, #61 C3H8, #62 HNC, #63 C6H6
+!   09MAY18 AD Redefine #48,50-53, deassign #54-56.
 !   23JUN17 AD Add ADDNEW argument to allow new molecules to be added
 !   01MAY17 AD F90 conversion. Checked.
 !
@@ -98,16 +100,18 @@ SUBROUTINE MOLIDX ( IDX, MOL, ADDNEW )
     CASE ( 45 )  ; MOL = 'h2' 
     CASE ( 46 )  ; MOL = 'cs' 
     CASE ( 47 )  ; MOL = 'so3'
-    CASE ( 48 )  ; MOL = 'c3h8'   ; ICHK = 1
+    CASE ( 48 )  ; MOL = 'c2n2'
     CASE ( 49 )  ; MOL = 'cocl2'
-    CASE ( 50 )  ; MOL = 'bro'    ; ICHK = 2
-! Additional GEISA molecules
-    CASE ( 51 )  ; MOL = 'geh4'
-!    CASE ( 52 )  ; MOL = 'c3h8'   ; ICHK = 2
-    CASE ( 53 )  ; MOL = 'c2n2'
-    CASE ( 54 )  ; MOL = 'c3h4'
-    CASE ( 55 )  ; MOL = 'hnc'
-    CASE ( 56 )  ; MOL = 'c6h6'   ; ICHK = 2
+! TIPS molecules
+    CASE ( 50 )  ; MOL = 'so'
+    CASE ( 51 )  ; MOL = 'c3h4'
+    CASE ( 52 )  ; MOL = 'ch3'
+    CASE ( 53 )  ; MOL = 'cs2'
+! GEISA molecules
+    CASE ( 60 )  ; MOL = 'geh4'
+    CASE ( 61 )  ; MOL = 'c3h8'  ; ICHK = 2  ! Propane
+    CASE ( 62 )  ; MOL = 'hnc'
+    CASE ( 63 )  ; MOL = 'c6h6'  ; ICHK = 2  ! Benzene
 !
     CASE ( 99 )  ; MOL = 'air'
 !
@@ -160,8 +164,8 @@ SUBROUTINE MOLIDX ( IDX, MOL, ADDNEW )
     CASE ( 145 ) ; MOL = 'pan'     ! ch3c(o)oono2
 ! NMCs
     CASE ( 151 ) ; MOL = 'c2h6'   ; ICHK = 2   ! Ethane
-    CASE ( 152 ) ; MOL = 'c3h8'   ; ICHK = 2   ! Propane
-    CASE ( 153 ) ; MOL = 'c6h6'   ;  ICHK = 1 ! Benzene
+    CASE ( 152 ) ; MOL = 'c3h8'   ; ICHK = 1   ! Propane
+    CASE ( 153 ) ; MOL = 'c6h6'   ; ICHK = 1   ! Benzene
 ! New GEISA molecules
     CASE ( 154 ) ; MOL = 'c2h2'  ; ICHK = 2 ! Acetylene
     CASE ( 155 ) ; MOL = 'c2h4'  ; ICHK = 2 ! Ethylene
@@ -241,18 +245,18 @@ SUBROUTINE MOLIDX ( IDX, MOL, ADDNEW )
     CASE ( 'h2'      ) ; IDX = 45
     CASE ( 'cs'      ) ; IDX = 46
     CASE ( 'so3'     ) ; IDX = 47
-    CASE ( 'c3h8'    ) ; IDX = 48 ; ICHK = 1
+    CASE ( 'c2n2'    ) ; IDX = 48 
     CASE ( 'cocl2'   ) ; IDX = 49
-!
-    CASE ( 'broq'    ) ; IDX = 50 ; MOL = 'bro' ; ICHK = 2
-!
-! Additional GEISA line molecules
-    CASE ( 'geh4'    ) ; IDX = 51
-!    CASE ( 'c3h8q'   ) ; IDX = 52 ; MOL ='c3h8' ; ICHK = 2
-    CASE ( 'c2n2'    ) ; IDX = 53
-    CASE ( 'c3h4'    ) ; IDX = 54
-    CASE ( 'hnc'     ) ; IDX = 55
-    CASE ( 'c6h6q'   ) ; IDX = 56 ; MOL ='c6h6' ; ICHK = 2
+! TIPS molecules
+    CASE ( 'so'      ) ; IDX = 50
+    CASE ( 'c3h4'    ) ; IDX = 51
+    CASE ( 'ch3'     ) ; IDX = 52
+    CASE ( 'cs2'     ) ; IDX = 53
+! GEISA molecules
+    CASE ( 'geh4'    ) ; IDX = 60
+    CASE ( 'c3h8q'   ) ; IDX = 61 ; MOL = 'c3h8' ; ICHK = 2
+    CASE ( 'hnc'     ) ; IDX = 62
+    CASE ( 'c6h6q'   ) ; IDX = 63 ; MOL = 'c6h6' ; ICHK = 2
 !
     CASE ( 'air' )     ; IDX = 99
 !
@@ -309,7 +313,7 @@ SUBROUTINE MOLIDX ( IDX, MOL, ADDNEW )
 !
 ! NMCs
     CASE ( 'c2h6x'  ) ; IDX = 151 ; MOL = 'c2h6' ; ICHK = 2 ! Ethane
-    CASE ( 'c3h8x'  ) ; IDX = 152 ; MOL = 'c3h8' ; ICHK = 1 ! Propane
+    CASE ( 'c3h8'   ) ; IDX = 152 ; MOL = 'c3h8' ; ICHK = 1 ! Propane
     CASE ( 'c6h6'   ) ; IDX = 153 ; ICHK = 1                ! Benzene
     CASE ( 'c2h2x'  ) ; IDX = 154 ; MOL = 'c2h2' ; ICHK = 2 ! Acetylene
     CASE ( 'c2h4x'  ) ; IDX = 155 ; MOL = 'c2h5' ; ICHK = 2 ! Ethylene

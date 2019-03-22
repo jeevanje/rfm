@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE DRVSFC ( LUNDRV, FAIL, ERRMSG )
 !
 ! VERSION
-!   21JUN17 AD Restructured to allow PARAM=VALUE specifications as well.
+!   14DEC17 AD Restructured to allow PARAM=VALUE specifications as well.
 !   01MAY17 AD Original. Checked.
 !
 ! DESCRIPTION
@@ -22,7 +22,7 @@ SUBROUTINE DRVSFC ( LUNDRV, FAIL, ERRMSG )
     USE C9REAL_GEN ! Write real number as C*9 string
     USE NXTFLD_SUB ! Load next field from section of driver file
     USE PARFLD_SUB ! Extract Parameter=Value string from record
-    USE SFCEMS_SUB ! Read SFC emissivity data
+    USE SFCEMS_SUB ! Read surface emissivity data
     USE SFCLEV_SUB ! Read SFC height or pressure
     USE UPCASE_FNC ! Convert text string to upper case
     USE WRTLOG_SUB ! Write text message to log file
@@ -41,7 +41,7 @@ SUBROUTINE DRVSFC ( LUNDRV, FAIL, ERRMSG )
     LOGICAL           :: GOTTEM = .FALSE. ! T=surface temperature set
     LOGICAL           :: LRELTV = .FALSE. ! T=relative temperature specified
     INTEGER(I4)       :: IFLD   = 1       ! Counter for fields within section
-    INTEGER(I4)       :: IOS    ! Saved value of IOSTAT for I/O error message
+    INTEGER(I4)       :: IOS = 0   ! Saved value of IOSTAT for I/O error message
     INTEGER(I4)       :: LENGTH ! Length of FIELD
     REAL(R4)          :: TEMREL ! Relative temperature [K] (wrt Atmos.Temp)
     CHARACTER(LENREC) :: FIELD  ! Field read from Driver file

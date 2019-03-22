@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE DRVKEY ( LUNDRV, KEY, FAIL, ERRMSG ) 
 !
 ! VERSION
-!   01MAY17 AD F90 version. Checked.
+!   19DEC17 AD F90 version. Checked.
 !
 ! DESCRIPTION
 !   Check section key from driver table
@@ -165,6 +165,7 @@ SUBROUTINE DRVKEY ( LUNDRV, KEY, FAIL, ERRMSG )
   CASE ( '*RJT' ) ; USEKEY = RJTFLG
   CASE ( '*SFC' ) ; USEKEY = SFCFLG
   CASE ( '*SHP' ) ; USEKEY = SHPFLG
+  CASE ( '*SVD' ) ; USEKEY = SVDFLG
   CASE ( '*TAB' ) ; USEKEY = TABFLG
   CASE ( '*TRA' ) ; USEKEY = TRAFLG
   CASE ( '*WID' ) ; USEKEY = WIDFLG

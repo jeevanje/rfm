@@ -3,6 +3,7 @@ CONTAINS
 LOGICAL FUNCTION JTPPTH ( IPTH, IJAC ) 
 !
 ! VERSION
+!   31MAY18 AD Ensure JTAN=0 is handled.
 !   01MAY17 AD F90 version. Checked.
 !
 ! DESCRIPTION
@@ -31,7 +32,8 @@ LOGICAL FUNCTION JTPPTH ( IPTH, IJAC )
   JTAN = JAC(IJAC)%ITN
   ITAN = PTH(IPTH)%ITN
   JTPPTH = JTAN .EQ. ITAN
-  IF ( JTPPTH ) RETURN    ! Path along nominal tan.ray
+  IF ( JTPPTH ) RETURN       ! Path along nominal tan.ray
+  IF ( JTAN .EQ. 0 ) RETURN  ! If called with IJAC not a tan.pt Jacobian
 !
 ! Also TRUE if IPTH lies along any tan.rays required to construct FOV for
 ! nominal tan.ray

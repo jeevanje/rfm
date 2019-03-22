@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE SPCXSC ( IWID ) 
 !
 ! VERSION
+!   08FEB19 AD Bug#16: Add NTRI argument to TRIINT
 !   01MAY17 AD F90 conversion of rfmxsc.for. Checked.
 !
 ! DESCRIPTION    
@@ -52,7 +53,8 @@ SUBROUTINE SPCXSC ( IWID )
     DO ICLC = 1, NCLC
       IF ( CLC(ICLC)%IGS .NE. IGAS ) CYCLE
       CALL TRIINT ( CLC(ICLC)%TEM, CLC(ICLC)%PRE*760.0, XSC(IXSC)%NXT, & 
-                    XSC(IXSC)%TEM, XSC(IXSC)%PRE, XSC(IXSC)%ITRI, &
+                    XSC(IXSC)%TEM, XSC(IXSC)%PRE, &
+                    XSC(IXSC)%NTRI, XSC(IXSC)%ITRI, &
                     IDXLKP, WGTLKP, TFIT, PFIT )
       KXS = XSCINT ( IXSC, IDXLKP(1), NFIN, WNOFIN ) * WGTLKP(1) + & 
             XSCINT ( IXSC, IDXLKP(2), NFIN, WNOFIN ) * WGTLKP(2) + &

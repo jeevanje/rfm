@@ -3,7 +3,7 @@ CONTAINS
 PURE SUBROUTINE REAQAL ( QALSTR, IQAL, FAIL, ERRMSG, TWOQAL, JQAL )
 !
 ! VERSION
-!   05OCT17 AD F90 rewritten.
+!   07NOV17 AD F90 rewritten. Checked.
 !
 ! DESCRIPTION
 !   Decode Qualifier strings '(IQAL)' or '(IQAL:JQAL)'
@@ -37,7 +37,7 @@ PURE SUBROUTINE REAQAL ( QALSTR, IQAL, FAIL, ERRMSG, TWOQAL, JQAL )
 !
 ! Default values if wildcard '*' appears in qualifier string
   IQAL = 0
-  JQAL = 0
+  IF ( PRESENT ( TWOQAL ) ) JQAL = 0
 !
   IPT = INDEX ( QALSTR, '(' ) 
   JPT = INDEX ( QALSTR, ')' ) 

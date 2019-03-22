@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE RFMPRF ( FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   08NOV17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   Write out RFM internal atmospheric profile
@@ -41,7 +41,7 @@ SUBROUTINE RFMPRF ( FAIL, ERRMSG )
     INTEGER(I4)   :: IVIB   ! Counter for vibrational temperature profiles
     INTEGER(I4)   :: IVMR   ! Counter for VMR profiles
     CHARACTER(7)  :: STASTR = 'UNKNOWN' ! Status for OPEN statements
-    CHARACTER(LENNAM) :: NAMFIL ! Name of file actually opened (incl. RUNID)
+    CHARACTER(LENNAM) :: FILNAM ! Name of file actually opened (incl. RUNID)
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 ! 
@@ -54,14 +54,14 @@ SUBROUTINE RFMPRF ( FAIL, ERRMSG )
 !
 ! Construct filename and open file
     IF ( GRAFLG ) THEN       ! Insert angle into output filename
-      CALL MAKNAM ( NAMPRF, NAMFIL, IPSI=IPSI )
+      CALL MAKNAM ( PRFNAM, FILNAM, IPSI=IPSI )
       CALL MOVGRA ( IPSI, 0 )
     ELSE                     ! No angle required
-      CALL MAKNAM ( NAMPRF, NAMFIL ) 
+      CALL MAKNAM ( PRFNAM, FILNAM ) 
     END IF
-    CALL WRTLOG ( 'I-RFMPRF: Opening output file: ' // NAMFIL )
+    CALL WRTLOG ( 'I-RFMPRF: Opening output file: ' // FILNAM )
 !
-    OPEN ( UNIT=LUNTMP, FILE=NAMFIL, STATUS=STASTR, ACTION='WRITE', &
+    OPEN ( UNIT=LUNTMP, FILE=FILNAM, STATUS=STASTR, ACTION='WRITE', &
            IOSTAT=IOS, ERR=900 )
 !
 ! Write File Header 

@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE ATMAUX 
 !
 ! VERSION
-!   01MAY17 AD F90 version. Checked.
+!   30DEC17 AD F90 version. Checked.
 !
 ! DESCRIPTION
 !   Set up auxiliary profiles of atmospheric parameters
@@ -39,14 +39,18 @@ SUBROUTINE ATMAUX
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
-  IF ( ALLOCATED ( LNPATM ) ) THEN
-    IF ( SIZE(LNPATM) .NE. NATM ) &
-      DEALLOCATE ( LNPATM, DNSATM, LNDATM, RFRATM, DSHATM ) 
+  IF ( ALLOCATED ( DNSATM ) ) THEN
+    IF ( SIZE(DNSATM) .NE. NATM ) DEALLOCATE ( DNSATM, LNDATM, RFRATM, DSHATM ) 
   END IF
 !
-  IF ( .NOT. ALLOCATED ( LNPATM ) ) &
-    ALLOCATE ( LNPATM(NATM), DNSATM(NATM), LNDATM(NATM), RFRATM(NATM), &
-               DSHATM(NATM) ) 
+  IF ( .NOT. ALLOCATED ( DNSATM ) ) &
+    ALLOCATE ( DNSATM(NATM), LNDATM(NATM), RFRATM(NATM), DSHATM(NATM) ) 
+! 
+! Lnp profile may be separately allocated from other profiles
+  IF ( ALLOCATED ( LNPATM ) ) THEN
+    IF ( SIZE(LNPATM) .NE. NATM ) DEALLOCATE ( LNPATM ) 
+  END IF
+  IF ( .NOT. ALLOCATED ( LNPATM ) ) ALLOCATE ( LNPATM(NATM) ) 
 !
   LNPATM = LOG ( MAX ( PREATM, ARGMIN ) )
 !

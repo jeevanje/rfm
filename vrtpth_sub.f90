@@ -3,7 +3,8 @@ CONTAINS
 SUBROUTINE VRTPTH 
 !
 ! VERSION
-!   01MAY17 AD F90 conversion of nadpth.for. Checked.
+!   02MAY18 AD Bug#2 - correct SECANG if user-specified elevation angle
+!   15DEC17 AD F90 conversion of nadpth.for. Checked.
 !
 ! DESCRIPTION
 !   Determine path segments along vertical path
@@ -42,8 +43,8 @@ SUBROUTINE VRTPTH
     NPTH = MTAN * NVMR * ( NATM - IATOBS ) 
     IATM1 = IATOBS
   ELSE
-    NPTH = MTAN * NVMR * ( NATM - 1 )
-    IATM1 = 1
+    NPTH = MTAN * NVMR * ( NATM - IATSFC )
+    IATM1 = IATSFC
   END IF
 !
   ALLOCATE ( PTH(NPTH) )
@@ -51,7 +52,11 @@ SUBROUTINE VRTPTH
   IPTH = 0
 !
   DO ITAN = 1, MTAN
-    SECANG = TAN(ITAN)%USR   
+    IF ( USRELE ) THEN
+      SECANG = 1.0 / SIN ( ABS ( TAN(ITAN)%USR * DG2RAD ) ) 
+    ELSE
+      SECANG = TAN(ITAN)%USR   
+    END IF
     DO IATM = IATM1, NATM-1
       DO IVMR = 1, NVMR
         IPTH = IPTH + 1

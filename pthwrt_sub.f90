@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE PTHWRT ( FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion of rfmpth.for
+!   14DEC17 AD F90 conversion of rfmpth.for
 !
 ! DESCRIPTION
 !   Write RFM path diagnostics
@@ -51,7 +51,7 @@ SUBROUTINE PTHWRT ( FAIL, ERRMSG )
     REAL(R4)      :: AMTSUM ! Total absorber mass [kmol/cm^2]
     REAL(R4)      :: HGT    ! Lowest altitude for path segment
     REAL(R4)      :: RAYSUM ! Total pathlength [km]
-    CHARACTER(LENNAM) :: NAMFIL ! Name of file actually opened (incl. RUNID)
+    CHARACTER(LENNAM) :: FILNAM ! Name of file actually opened (incl. RUNID)
     CHARACTER(80)     :: REC    ! Text record written out
     CHARACTER(7)      :: STASTR = 'UNKNOWN' ! Status for OPEN statements
     CHARACTER(9)      :: TANSTR ! Tangent path info
@@ -63,9 +63,9 @@ SUBROUTINE PTHWRT ( FAIL, ERRMSG )
   DO ITAN = 1, NTAN
 !
 ! Construct filename and open file
-    CALL MAKNAM ( NAMPTH, NAMFIL, ITAN=ITAN )
-    CALL WRTLOG ( 'I-PTHWRT: Opening output file: ' // NAMFIL ) 
-    OPEN ( UNIT=LUNTMP, FILE=NAMFIL, STATUS=STASTR, ACTION='WRITE', &
+    CALL MAKNAM ( PTHNAM, FILNAM, ITAN=ITAN )
+    CALL WRTLOG ( 'I-PTHWRT: Opening output file: ' // FILNAM ) 
+    OPEN ( UNIT=LUNTMP, FILE=FILNAM, STATUS=STASTR, ACTION='WRITE', &
              IOSTAT=IOS, ERR=900 )
 !
     TANSTR = C9REAL ( TAN(ITAN)%USR ) 
@@ -94,7 +94,7 @@ SUBROUTINE PTHWRT ( FAIL, ERRMSG )
       WRITE ( LUNTMP, '(A)', IOSTAT=IOS, ERR=900 ) REC
       WRITE ( LUNTMP, '(A)', IOSTAT=IOS, ERR=900 ) TXTHDR
       IF ( ZENFLG ) THEN
-        IATM1 = 1
+        IATM1 = IATSFC
         IATM2 = NATM - 1
         IF ( OBSFLG ) IATM1 = MIN ( IATOBS, NATM-1 )
         IDIR = 1
@@ -102,7 +102,7 @@ SUBROUTINE PTHWRT ( FAIL, ERRMSG )
         NSEG2 = 0
       ELSE                              ! NADFLG
         IATM1 = NATM - 1
-        IATM2 = 1
+        IATM2 = IATSFC
         IF ( OBSFLG .AND. .NOT. RFLSFC ) IATM1 = MIN ( IATOBS-1, NATM-1 ) 
         IDIR = -1
         NSEG1 = IATM1 - IATM2 + 1

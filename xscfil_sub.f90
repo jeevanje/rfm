@@ -3,6 +3,8 @@ CONTAINS
 SUBROUTINE XSCFIL ( NAMXSC, FAIL, ERRMSG )
 !
 ! VERSION
+!   17JAN18 AD BACKSPACE rather than REWIND in case RFM format has comment recs
+!   20NOV17 AD should really check that .xsc file has correct format at first
 !   23JUN17 AD Allow for original HITRAN format files
 !   01MAY17 AD F90 version. Checked.
 !
@@ -66,13 +68,17 @@ SUBROUTINE XSCFIL ( NAMXSC, FAIL, ERRMSG )
 ! Check if RFM format or original format
   READ ( LUNTMP, '(A20)', IOSTAT=IOS, ERR=900 ) C20
   RFMFMT = C20(1:3) .EQ. '***'
-  REWIND ( LUNTMP ) 
+  BACKSPACE ( LUNTMP ) 
 !
   IF ( .NOT. RFMFMT ) THEN
     MOLEC = ADJUSTL(C20)
     IDXMOL = 0
     CALL MOLIDX ( IDXMOL, MOLEC )  
-    IGAS = IDXGAS ( IDXMOL )
+    IF ( IDXMOL .GT. 0 ) THEN
+      IGAS = IDXGAS ( IDXMOL )
+    ELSE 
+      IGAS = 0
+    END IF
     IF ( IGAS .EQ. 0 ) THEN       ! molecule not required
       NRNG = 0                    ! suppress reading file in main loop
     ELSE

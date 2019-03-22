@@ -3,11 +3,11 @@ CONTAINS
 SUBROUTINE IDGSTR ( GASSTR, IDXMOL, IDXISO ) 
 !
 ! VERSION
-!   02OCT17 AD Original.
+!   02OCT17 AD Original. Checked.
 !
 ! DESCRIPTION
 !   Decode string HITRAN/RFM index and isotope
-!   General purpose module.
+!   Called by CHKGAS.
 !   Returns IDXMOL = IDXISO = 0 if unable to decode
 !
 ! VARIABLE KINDS

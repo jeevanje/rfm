@@ -49,7 +49,7 @@ SUBROUTINE OPNHIT ( NAMHIT, FAIL, ERRMSG )
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
 ! Send message to LOG file saying which file is about to be opened
-  CALL WRTLOG ( 'I-OPNHIT: Opening HITRAN File:'//NAMHIT )
+  CALL WRTLOG ( 'I-OPNHIT: Opening HITRAN File: '//NAMHIT )
 !
   IF ( .NOT. LEXIST ( NAMHIT ) ) THEN 
     FAIL = .TRUE.

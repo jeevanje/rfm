@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE ADDGAS ( IDXMOL, IDXISO, NEWGAS )
 !
 ! VERSION
-!   01MAY17 AD F90 Original. Based on gaschk.for. Checked.
+!   07NOV17 AD F90 Original. Based on gaschk.for. Checked.
 !
 ! DESCRIPTION
 !   Add new molecule/isotope to list of absorbers
@@ -91,17 +91,19 @@ SUBROUTINE ADDGAS ( IDXMOL, IDXISO, NEWGAS )
   IF ( PRESENT ( IDXISO ) ) THEN
     IF ( IDXISO .LT. 0 .OR. IDXISO .GT. MAXISO ) STOP 'F-ADDGAS: Logical error#2'
     IF ( IDXISO .GT. 0 ) THEN
-!
+! 
       MGAS = IGSMOL(IDXMOL)     ! index of default molecule data
       NISO = GAS(MGAS)%NIS 
       IF ( IDXISO .GT. NISO ) STOP 'F-ADDGAS: Logical Error#3'
       IF ( GAS(MGAS)%ISO(IDXISO) .EQ. MGAS ) THEN ! not yet separated
         CALL MOVE_ALLOC ( GAS, GASSAV ) 
-        GAS(1:NGAS) = GASSAV
         NGAS = NGAS + 1
         ALLOCATE ( GAS(NGAS) )
+        GAS(1:NGAS-1) = GASSAV
         GAS(MGAS)%ISO(IDXISO) = NGAS  ! modify iso index in def.molec data
         GAS(NGAS) = GAS(MGAS)         ! copy default molecule data
+        ALLOCATE ( GAS(NGAS)%ISO(0:NISO), GAS(NGAS)%WGT(NISO) )
+        GAS(NGAS)%WGT = GAS(MGAS)%WGT
         GAS(NGAS)%IDI = IDXISO        ! note current isotope
         GAS(NGAS)%COD = GAS(MGAS)%COD // '(' // TRIM ( C11INT(IDXISO) ) // ')'
         DO IISO = 1, NISO         ! update iso lists any previously sep. isotopes

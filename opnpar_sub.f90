@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE OPNPAR ( NAMHIT, FAIL, ERRMSG )
 !
 ! VERSION
-!   12JUN17 AD Original.
+!   17NOV17 AD Original.
 !
 ! DESCRIPTION
 !   Open HITRAN ASCII line parameter file and check contents
@@ -61,8 +61,12 @@ SUBROUTINE OPNPAR ( NAMHIT, FAIL, ERRMSG )
     ERRMSG = 'F-OPNPAR: MIX flag requires binary HITRAN file'
   ELSE IF ( NTEFLG ) THEN
     ERRMSG = 'F-OPNPAR: NTE flag requires binary HITRAN file'
-  ELSE IF ( ANY ( QAL%ILS .NE. 0 ) .OR. ANY ( QAL%IUS .NE. 0 ) ) THEN
-    ERRMSG = 'F-OPNPAR: Vib level selection requires binary HITRAN file'
+  ELSE IF ( NQAL .GT. 0 ) THEN
+    IF ( ANY ( QAL%ILS .NE. 0 ) .OR. ANY ( QAL%IUS .NE. 0 ) ) THEN
+      ERRMSG = 'F-OPNPAR: Vib level selection requires binary HITRAN file'
+    ELSE
+      FAIL = .FALSE.
+    END IF
   ELSE
     FAIL = .FALSE.
   END IF
@@ -72,17 +76,17 @@ SUBROUTINE OPNPAR ( NAMHIT, FAIL, ERRMSG )
 ! Flag all required molecules as -1 until first line found in HITRAN file
   DO IGAS = 1, NGAS
     IDXMOL = GAS(IGAS)%IDM
-    IFPHFL(IDXMOL) = -1
+    IF ( IDXMOL .LE. MAXPTR ) IFPHFL(IDXMOL) = -1
   END DO
 !
 ! Read first record
-  READ ( LUNHIT, '(I2,I1,F12.6)', ERR=900, IOSTAT=IOS ) IDXMOL, IDXISO, WNLHFL
+  READ ( LUNHIT, '(I2,Z1,F12.6)', ERR=900, IOSTAT=IOS ) IDXMOL, IDXISO, WNLHFL
   IF ( IDXMOL .LE. MAXPTR ) IFPHFL(IDXMOL) = 1
 !
   WNUHFL = WNLHFL
 ! Don't need to read to the end of the file, just to max required wavenumber
   DO WHILE ( WNUHFL .LT. WMXSPC + FWIND .OR. ANY ( IFPHFL .EQ. -1 ) ) 
-    READ ( LUNHIT, '(I2,I1,F12.6)', IOSTAT=IOS, END=900, ERR=900 ) &
+    READ ( LUNHIT, '(I2,Z1,F12.6)', IOSTAT=IOS, END=900, ERR=900 ) &
       IDXMOL, IDXISO, WNUHFL
     IF ( IDXMOL .LE. MAXPTR ) IFPHFL(IDXMOL) = 1
   END DO

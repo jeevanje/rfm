@@ -1,7 +1,7 @@
 MODULE HITCOM_DAT
 !
 ! VERSION
-!   01MAY17 AD F90 version. Checked.
+!   24FEB17 AD F90 version. Checked.
 !
 ! DESCRIPTION
 !   HITRAN line data 
@@ -37,9 +37,9 @@ MODULE HITCOM_DAT
     TYPE(HITTYP) :: HIT
     TYPE(HITTYP), ALLOCATABLE :: CYC(:)  ! Cyclic buffer
 !
-    INTEGER(I4) :: ICYC1  ! Index for lowest wavenumber line
     INTEGER(I4) :: IFWDPT ! Forward pointer on data line
     INTEGER(I4) :: NCYC   ! Current size of CYC array
     INTEGER(I4) :: NLIN   ! No.lines currently stored
+    INTEGER(I4) :: ICYC1  ! Index for lowest wavenumber line
 !
 END MODULE HITCOM_DAT

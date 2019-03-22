@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE SHPGAS ( ISHP, GASNAM, FAIL, ERRMSG )
 !
 ! VERSION
+!   31MAY18 AD Bug#8: Allow CHI shape to replace MIX shape
 !   01MAY17 AD F90 conversion of part of inpshp.for. Tested.
 !
 ! DESCRIPTION
@@ -55,7 +56,8 @@ SUBROUTINE SHPGAS ( ISHP, GASNAM, FAIL, ERRMSG )
   ELSE IF ( GAS(IGAS)%SHP .EQ. SHPXSC ) THEN
     ERRMSG = 'F-SHPGAS: line shape specified for ' // GASNAM // &
              ' but already set as cross-section'
-  ELSE IF ( GAS(IGAS)%SHP .NE. 0 ) THEN
+  ELSE IF ( GAS(IGAS)%SHP .NE. 0 .AND. .NOT. & ! allow CHI shape to override MIX
+            ( ISHP .EQ. SHPCHI .AND. GAS(IGAS)%SHP .EQ. SHPMIX ) ) THEN
     ERRMSG = 'F-SHPGAS: Two different line shapes specified for gas= ' // GASNAM
   ELSE IF ( ISHP .EQ. SHPCHI .AND. IDXMOL .NE. IDXCO2 ) THEN
     ERRMSG = 'F-SHPGAS: Chi-factor only appicable to CO2'

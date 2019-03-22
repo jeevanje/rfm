@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE SFCLEV ( PARAM, VALUE, FAIL, ERRMSG )
 !
 ! VERSION
-!   21JUN17 AD F90 original.
+!   14DEC17 AD F90 original.
 !
 ! DESCRIPTION
 !   Read SFC height or pressure 
@@ -15,6 +15,7 @@ SUBROUTINE SFCLEV ( PARAM, VALUE, FAIL, ERRMSG )
 !
 ! GLOBAL DATA
     USE ATMCOM_DAT ! Atmospheric profile data
+    USE TANCOM_DAT ! Tangent path data
 !
 ! SUBROUTINES
     USE ADDATM_SUB ! Add extra level to atm profiles in ATMCOM
@@ -43,7 +44,7 @@ SUBROUTINE SFCLEV ( PARAM, VALUE, FAIL, ERRMSG )
                ' not within profile'
       RETURN
     END IF
-    CALL ADDATM ( HGTSFC, .FALSE., IATSFC ) 
+    CALL ADDATM ( HGTSFC, .TRUE., IATSFC ) 
     CALL WRTLOG ( 'I-SFCLEV: Setting Surface Altitude = ' // C9REAL(HGTSFC) )
   CASE ( 'PRESFC' ) 
     READ ( VALUE, *, IOSTAT=IOS, ERR=900 ) PRESFC
@@ -53,11 +54,17 @@ SUBROUTINE SFCLEV ( PARAM, VALUE, FAIL, ERRMSG )
                ' not within profile'
       RETURN
     END IF
-    CALL ADDATM ( PRESFC, .TRUE., IATSFC ) 
+    CALL ADDATM ( PRESFC, .FALSE., IATSFC ) 
     CALL WRTLOG ( 'I-SFCLEV: Setting Surface Pressure = ' // C9REAL(PRESFC) )
   CASE DEFAULT
     STOP 'F-SFCLEV: Logical error'
   END SELECT
+!
+! Where TAN%IAT previously pointed to surface IATM=1, reset to new surface
+  WHERE ( TAN(:)%IAT .EQ. 1 ) 
+    TAN(:)%IAT = IATSFC
+    TAN(:)%HGT = HGTSFC
+  END WHERE
 !
 900 CONTINUE
   FAIL = IOS .NE. 0 

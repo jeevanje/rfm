@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE DRVTAN ( LUNDRV, FAIL, ERRMSG )
 !
 ! VERSION
+!   04FEB19 AD Add subroutine TANLOS
 !   01MAY17 AD F90 conversion of inptan.for. Tested.
 !
 ! DESCRIPTION
@@ -24,6 +25,7 @@ SUBROUTINE DRVTAN ( LUNDRV, FAIL, ERRMSG )
     USE NXTFFL_SUB ! Load next field from rfm.drv, expanding filenames
     USE TANCHK_SUB ! Check if string is valid Tangent Height
     USE TANFLX_SUB ! Initialise spectral flux calculation
+    USE TANLOS_SUB ! Set up LOS Jacobians
     USE TANMTX_SUB ! Set matrix output levels
     USE WRTLOG_SUB ! Write text message to log file
 !
@@ -52,6 +54,7 @@ SUBROUTINE DRVTAN ( LUNDRV, FAIL, ERRMSG )
     CALL WRTLOG ( ' '//FIELD, .TRUE. ) 
   END DO
 !
+  IF ( LOSFLG ) CALL TANLOS
   IF ( FLXFLG ) CALL TANFLX
   IF ( MTXFLG ) CALL TANMTX
 !

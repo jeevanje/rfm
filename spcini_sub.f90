@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE SPCINI ( ISPC, MWID, FAIL, ERRMSG ) 
 !
 ! VERSION
-!   01MAY17 AD F90 version. Checked.
+!   20DEC17 AD F90 version. 
 !
 ! DESCRIPTION
 !   Initialise widemesh grid
@@ -14,6 +14,7 @@ SUBROUTINE SPCINI ( ISPC, MWID, FAIL, ERRMSG )
 !
 ! GLOBAL DATA
     USE FLGCOM_DAT ! Option flags
+    USE GASCOM_DAT ! Molecule and isotope data
     USE SPCCOM_DAT ! Spectral range data
     USE WIDCOM_DAT ! Widemesh data
     USE FULCOM_DAT, ONLY: WNRFUL ! Spacing of full grid data
@@ -23,7 +24,8 @@ SUBROUTINE SPCINI ( ISPC, MWID, FAIL, ERRMSG )
     USE INILBL_SUB ! Initialise line-by-line calc segments
     USE INILUT_SUB ! Initialise LUT data for each new spectral range
     USE INISTT_SUB ! Initialise widemesh statistics
-    USE WIDMIX_SUB ! Adjust Wno limits to avoid splitting mixing datasets
+    USE INISVD_SUB ! Initialise SVD data for each new spectral range
+!    USE WIDMIX_SUB ! Adjust Wno limits to avoid splitting mixing datasets
 !
   IMPLICIT NONE
 !
@@ -37,6 +39,8 @@ SUBROUTINE SPCINI ( ISPC, MWID, FAIL, ERRMSG )
     LOGICAL     :: FIRST = .TRUE. ! T= first call of this routine
     INTEGER(I4) :: IWD2 ! Widemesh half-interval counter (0:NWD2)
     INTEGER(I4) :: IWID ! Widemesh boundary counter (0:NWID)
+    LOGICAL, SAVE, ALLOCATABLE :: HITGAS(:) ! Flags indicating HITRAN gases
+    LOGICAL, SAVE, ALLOCATABLE :: XSCGAS(:) ! Flags indicating x/s gases
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
@@ -70,16 +74,27 @@ SUBROUTINE SPCINI ( ISPC, MWID, FAIL, ERRMSG )
   WNUWID = WN2WID + FWIND
 !
 ! Adjust to include complete bands if using CO2 line-mixing
-  IF ( MIXFLG ) CALL WIDMIX ( WNLWID, WNUWID )
+!  IF ( MIXFLG ) CALL WIDMIX ( WNLWID, WNUWID )
 !
+! On first call save GAS%HIT and GAS%XSC flags for each gas
+  IF ( FIRST ) THEN
+    ALLOCATE ( HITGAS(NGAS), XSCGAS(NGAS) )
+    HITGAS = GAS%HIT
+    XSCGAS = GAS%XSC
+    FIRST = .FALSE.
+  END IF
+!
+  GAS%HIT = HITGAS         ! reload original values
+  GAS%XSC = XSCGAS
   IF ( LUTFLG ) THEN
     CALL INILUT ( ISPC, FAIL, ERRMSG ) 
     IF ( FAIL ) RETURN
-    CALL INILBL
-  ELSE IF ( FIRST ) THEN  ! unless LUT used, only need to call INILBL once
-    CALL INILBL
-    FIRST = .FALSE.
   END IF
+  IF ( SVDFLG ) THEN
+    CALL INISVD ( ISPC, FAIL, ERRMSG )
+    IF ( FAIL ) RETURN
+  END IF
+  CALL INILBL
 !
   IF ( ALLOCATED ( ABSWID ) ) DEALLOCATE ( ABSWID ) 
   ALLOCATE ( ABSWID(3,NWID,NLBL) ) ; ABSWID = 0.0    ! NLBL in WIDCOM

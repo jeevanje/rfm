@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE CHKFOV ( FAIL, ERRMSG )
 !
 ! VERSION
+!   30MAY18 AD Bug#7: Assign new tan paths for all FOV elements
 !   01MAY17 AD F90 conversion of fovtan.for. Checked.
 !
 ! DESCRIPTION
@@ -41,6 +42,7 @@ SUBROUTINE CHKFOV ( FAIL, ERRMSG )
     REAL(R4)      :: TANFOV  ! Value of tangent path + FOV point
     CHARACTER(80) :: MESSGE  ! Text message for Log file
     REAL(R4), ALLOCATABLE :: TOLFOV(:) ! Hgt Tol for matching FOV convol pts
+    REAL(R4),     POINTER :: TANPRV(:) ! Previously added FOV paths
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
@@ -59,44 +61,52 @@ SUBROUTINE CHKFOV ( FAIL, ERRMSG )
     TOLFOV(NFOV) = TOLFOV(NFOV-1)
   END IF
 !
-! Switch off calculation for set of nominal tangent paths - may be switched on
-! again if path required for FOV convolution
+! Switch off calculation for set of nominal tangent paths 
   TAN(1:NTAN)%CLC = .FALSE.
 !
-! For each output tangent height (1:NTAN) check if any already listed will do
-! for FOV convolution, otherwise add to list (NTAN+1:MTAN)
+! Add new tangent paths required for FOV convolution as NTAN+1:MTAN
+! After settting up FOV paths for first nom.tan path (ITAN=1), check if 
+! subsequent FOV tangent paths can re-use any previously defined paths
+!
   GEOFOV = .NOT. ( ELEFOV .OR. FVZFLG )
   ALLOCATE ( ITNFOV(NTAN,NFOV) )
   DO ITAN = 1, NTAN
-    DO IFOV = 1, NFOV
+    IF ( ITAN .GT. 1 ) THEN 
       IF ( ELEFOV ) THEN          ! FOV expressed as elevation angles ...
-        TANFOV = TAN(ITAN)%ELE + FOV(IFOV)%ALT
-        FOVDIF = MINVAL ( ABS ( TAN%ELE - TANFOV ) ) 
-          JTAN = MINLOC ( ABS ( TAN%ELE - TANFOV ), 1 ) 
+        TANPRV => TAN(NTAN+1:MTAN)%ELE
       ELSE IF ( GEOFOV ) THEN     ! FOV expressed as geom.tan.hts
+        TANPRV => TAN(NTAN+1:MTAN)%GEO
+      ELSE                        ! FOV expressed in refracted tan.hts
+        TANPRV => TAN(NTAN+1:MTAN)%HGT
+      END IF
+    END IF
+    DO IFOV = 1, NFOV
+      IF ( ELEFOV ) THEN          
+        TANFOV = TAN(ITAN)%ELE + FOV(IFOV)%ALT
+      ELSE IF ( GEOFOV ) THEN
         TANFOV = TAN(ITAN)%GEO + FOV(IFOV)%ALT
-        FOVDIF = MINVAL ( ABS ( TAN%GEO - TANFOV ) )
-          JTAN = MINLOC ( ABS ( TAN%GEO - TANFOV ), 1 ) 
-      ELSE                        ! FOV expressed as ref.tan.hts (for OFM)
+      ELSE
         TANFOV = TAN(ITAN)%HGT + FOV(IFOV)%ALT 
-        FOVDIF = MINVAL ( ABS ( TAN%HGT - TANFOV ) )
-          JTAN = MINLOC ( ABS ( TAN%HGT - TANFOV ), 1 ) 
       END IF
-      IF ( FOVDIF .LE. TOLFOV(IFOV) ) THEN ! re-use existing tangent path
-        TAN(JTAN)%CLC = .TRUE.
-        ITNFOV(ITAN,IFOV) = JTAN
-      ELSE                                 ! add new tangent path
-        CALL ADDTAN ( 0, .TRUE. ) 
-        TAN(MTAN)%USR = TANFOV
-        ITNFOV(ITAN,IFOV) = MTAN
-        CALL CHKLIM ( MTAN, ELEFOV, GEOFOV, FAIL, ERRMSG )
-        IF ( FAIL ) RETURN
-      END IF
+      IF ( ITAN .GT. 1 ) THEN
+        FOVDIF = MINVAL ( ABS ( TANPRV - TANFOV ) ) 
+        IF ( FOVDIF .LE. TOLFOV(IFOV) ) THEN ! re-use existing tangent path
+          JTAN   = MINLOC ( ABS ( TANPRV - TANFOV ), 1 ) 
+          ITNFOV(ITAN,IFOV) = NTAN + JTAN
+          CYCLE 
+        END IF
+      ENDIF
+      CALL ADDTAN ( 0, .TRUE. )                     ! add new tangent path  
+      TAN(MTAN)%USR = TANFOV
+      ITNFOV(ITAN,IFOV) = MTAN
+      CALL CHKLIM ( MTAN, ELEFOV, GEOFOV, FAIL, ERRMSG )
+      IF ( FAIL ) RETURN
     END DO
+    IF ( ITAN .GT. 1 ) NULLIFY ( TANPRV ) 
   END DO
 !
-  MESSGE = 'I-CHKFOV: No.extra tangent paths required for FOV Convolution=' &
-           // C11INT ( MTAN - NTAN )
+  MESSGE = 'I-CHKFOV: '// TRIM ( C11INT ( MTAN - NTAN ) ) // &
+    ' extra tan.paths reqd for FOV Convl. New total=' // C11INT ( MTAN )
   CALL WRTLOG ( MESSGE )
 !
 END SUBROUTINE CHKFOV

@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE SPCTAB ( ISPC, IWID, NWID, FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 original. Checked.
+!   08NOV17 AD F90 original. Checked.
 !
 ! DESCRIPTION
 !   Write TABulated absorption coefficients
@@ -14,7 +14,7 @@ SUBROUTINE SPCTAB ( ISPC, IWID, NWID, FAIL, ERRMSG )
 !
 ! GLOBAL DATA
     USE TABCOM_DAT ! Axes for tabulated absorption coefficients
-    USE NAMCOM_DAT, ONLY: NAMTAB ! Name of .tab output file
+    USE NAMCOM_DAT, ONLY: TABNAM ! Name of .tab output file
 !
 ! SUBROUTINES
     USE OPNOUT_SUB ! Open spectral output files for current spectral range
@@ -40,7 +40,7 @@ SUBROUTINE SPCTAB ( ISPC, IWID, NWID, FAIL, ERRMSG )
   IF ( IWID .EQ. 1 ) THEN
     LUN = LUNTAB
     DO ITAB = 1, NTAB
-      CALL OPNOUT ( LUN, NAMTAB, FAIL, ERRMSG, IGAS=ITAB, ISPC=ISPC )
+      CALL OPNOUT ( LUN, TABNAM, FAIL, ERRMSG, IGAS=ITAB, ISPC=ISPC )
       IF ( FAIL ) RETURN
       CALL TABHDR ( LUN, ITAB, FAIL, ERRMSG )
       IF ( FAIL ) RETURN

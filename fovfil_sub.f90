@@ -3,7 +3,8 @@ CONTAINS
 SUBROUTINE FOVFIL ( NAMFOV, FAIL, ERRMSG )
 !
 ! VERSION
-!   01JUN17 AD F90 conversion. Tested.
+!   04MAY18 AD Bug#4 - read into local array ALT rather than FOV%ALT directly
+!   26FEB18 AD F90 conversion. Tested.
 !
 ! DESCRIPTION
 !   Read FOV data file
@@ -30,6 +31,7 @@ SUBROUTINE FOVFIL ( NAMFOV, FAIL, ERRMSG )
 ! LOCAL VARIABLES      
     INTEGER(I4) :: IFOV   ! Counter for FOV tabulation points
     INTEGER(I4) :: IOS    ! Saved value of IOSTAT for error message
+    REAL(R4), ALLOCATABLE :: ALT(:)    ! Temporary array for input
     REAL(R8), ALLOCATABLE :: TABFOV(:) ! Tabulated FOV response function
     REAL(R8), ALLOCATABLE :: DALT(:)   ! Differences between altitudes
 !
@@ -62,13 +64,14 @@ SUBROUTINE FOVFIL ( NAMFOV, FAIL, ERRMSG )
   IF ( FAIL ) RETURN
 !
 ! Read list of FOV altitudes
-  ALLOCATE ( FOV(NFOV), TABFOV(NFOV), DALT(NFOV-1) )
-  READ ( LUNTMP, *, IOSTAT=IOS ) ( FOV(IFOV)%ALT, IFOV = 1, NFOV ) 
+  ALLOCATE ( FOV(NFOV), TABFOV(NFOV), DALT(NFOV-1), ALT(NFOV) )
+  READ ( LUNTMP, *, IOSTAT=IOS ) ALT
   IF ( IOS .NE. 0 ) THEN 
     FAIL = .TRUE.
     WRITE ( ERRMSG, * ) 'F-FOVFIL: Error reading FOV altitudes. IOSTAT=', IOS
     RETURN
   END IF
+  FOV%ALT = ALT
 !
 ! Read tabulated FOV function 
   READ ( LUNTMP, *, IOSTAT=IOS ) TABFOV

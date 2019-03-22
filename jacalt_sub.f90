@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE JACALT ( JDX, TGT, FINISH, ALT, FAIL, ERRMSG, ITAN )
 !
 ! VERSION
+!   14JAN19 AD Add TRIM( ) around TGT in error message
 !   01MAY17 AD F90 conversion of part of jacchk.for. Checked.
 !
 ! DESCRIPTION
@@ -70,7 +71,7 @@ SUBROUTINE JACALT ( JDX, TGT, FINISH, ALT, FAIL, ERRMSG, ITAN )
       END IF
     CASE ( 1:2 ) 
       ERRMSG = 'F-JACALT: at least 3 altitudes required for Jacobians, ' &
-               // 'target=' // TGT
+               // 'target=' // TRIM(TGT)
       FAIL = .TRUE.
     CASE DEFAULT              ! reset for next target
       NALT = 0     
@@ -92,7 +93,7 @@ SUBROUTINE JACALT ( JDX, TGT, FINISH, ALT, FAIL, ERRMSG, ITAN )
       CALL ATMLEV ( ALTTMP, IUP )
     END IF
     IF ( IUP .LE. IAT ) THEN
-      ERRMSG = 'F-JACALT: ' // TGT // ' ptb altitude=' // C9REAL(ALT) // &
+      ERRMSG = 'F-JACALT: ' // TRIM(TGT) // ' ptb altitude=' // C9REAL(ALT) // &
                ' not increasing monotonically'
       FAIL = .TRUE.
     ELSE IF ( JDX .EQ. JDXSFT ) THEN

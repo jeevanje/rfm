@@ -1,7 +1,7 @@
 MODULE QALCOM_DAT
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   17NOV17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   Band/isotope selection qualifiers
@@ -24,6 +24,6 @@ MODULE QALCOM_DAT
 ! GLOBAL VARIABLES
     TYPE(QALTYP), ALLOCATABLE :: QAL(:)
 !
-    INTEGER(I4) :: NQAL ! No.of qualifiers set
+    INTEGER(I4) :: NQAL = 0 ! No.of qualifiers set
 !
 END MODULE QALCOM_DAT

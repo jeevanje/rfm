@@ -1,6 +1,7 @@
 MODULE TANCOM_DAT
 !
 ! VERSION
+!   30MAY18 AD Make TAN a TARGET
 !   01MAY17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
@@ -10,6 +11,7 @@ MODULE TANCOM_DAT
 !   Output tangent heights are 1:NTAN (1=lowest, NTAN=highest) limb view
 !   but not sorted for NAD, ZEN or HOM views.
 !   Extra tangent heights for FOV calculation are in NTAN+1:MTAN
+!   More may be added for Jacobian calculations
 !
 ! VARIABLE KINDS
     USE KIND_DAT
@@ -36,7 +38,7 @@ MODULE TANCOM_DAT
   END TYPE TANTYP
 !
 ! GLOBAL VARIABLES
-    TYPE(TANTYP), ALLOCATABLE :: TAN(:) 
+    TYPE(TANTYP), TARGET, ALLOCATABLE :: TAN(:) 
 !
     LOGICAL     :: USRELE = .FALSE. ! T=USRTAN are elevation angles
     LOGICAL     :: USRGEO = .FALSE. ! T=USRTAN are Geom.Tan.points.

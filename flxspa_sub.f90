@@ -3,10 +3,14 @@ CONTAINS
 SUBROUTINE FLXSPA ( WNO, RQAD ) 
 !
 ! VERSION
-!   01MAY17 AD F90 original.
+!   01MAY17 AD F90 original. Checked.
 !
 ! DESCRIPTION
-!   Space radiance flux.
+!   Space radiance flux
+!   Called by RADMTX, SPCFLX
+!   Initialises the array RQAD containing pencil beams at various angles used
+!   for hemispherical integration with Planck radiance appropriate to the
+!   temperature of cold space.
 !
 ! VARIABLE KINDS
     USE KIND_DAT

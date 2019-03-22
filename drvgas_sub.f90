@@ -25,7 +25,7 @@ SUBROUTINE DRVGAS ( LUNDRV, FAIL, ERRMSG )
     USE GASCHK_SUB ! Check Gas name and set indices
     USE NAMGAS_FNC ! Return molecule name + (iso) associated with GASCOM index
     USE NXTFFL_SUB ! Load next field from rfm.drv, expanding filenames
-    USE REAQAL_SUB !  Decode Qualifier strings '(IQAL)' or '(IQAL:JQAL)'
+    USE REAQAL_SUB ! Decode Qualifier strings '(IQAL)' or '(IQAL:JQAL)'
     USE WRTLOG_SUB ! Write text message to log file
 !
   IMPLICIT NONE

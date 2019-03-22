@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE REAXSC ( LUN, IGAS, NXT, FAIL, ERRMSG )
 !
 ! VERSION
+!   08FEB19 AD Bug#16: Extract no.triangles NTRI from TRIANG.
 !   01MAY17 AD F90 conversion. Checked.
 ! 
 ! DESCRIPTION    
@@ -28,16 +29,18 @@ SUBROUTINE REAXSC ( LUN, IGAS, NXT, FAIL, ERRMSG )
     CHARACTER(80), INTENT(OUT) :: ERRMSG ! Error message written if FAIL is TRUE
 !
 ! LOCAL VARIABLES
-    INTEGER(I4) :: IOF ! Offset for each (p,T) tabulation in ABS array
-    INTEGER(I4) :: IOS ! Saved value of IOSTAT for error messages
-    INTEGER(I4) :: IPT ! Counter for data points
-    INTEGER(I4) :: IXT ! Counter for X/S (p,T) tables
-    INTEGER(I4) :: NPT ! No. of X/S data points in current (p,T) table
-    REAL(R8)    :: WN1 ! Lower wno limit [cm-1] of x/s tabulation
-    REAL(R8)    :: WN2 ! Upper wno limit [cm-1] of x/s tabulation
-    REAL(R4),     ALLOCATABLE :: ABSDAT(:) ! Abs.Coeff values stored locally
-    REAL(R4),     ALLOCATABLE :: ABSSAV(:) ! Saved ABSDAT during reallocation
-    TYPE(XSCTYP), ALLOCATABLE :: XSCSAV(:) ! Saved XSC during reallocation
+    INTEGER(I4) :: IOF  ! Offset for each (p,T) tabulation in ABS array
+    INTEGER(I4) :: IOS  ! Saved value of IOSTAT for error messages
+    INTEGER(I4) :: IPT  ! Counter for data points
+    INTEGER(I4) :: IXT  ! Counter for X/S (p,T) tables
+    INTEGER(I4) :: NPT  ! No. of X/S data points in current (p,T) table
+    INTEGER(I4) :: NTRI ! No. triangles found
+    REAL(R8)    :: WN1  ! Lower wno limit [cm-1] of x/s tabulation
+    REAL(R8)    :: WN2  ! Upper wno limit [cm-1] of x/s tabulation
+    INTEGER(I4),  ALLOCATABLE :: IDXTRI(:,:) ! Triangle coordinates
+    REAL(R4),     ALLOCATABLE :: ABSDAT(:)   ! Abs.Coeff values stored locally
+    REAL(R4),     ALLOCATABLE :: ABSSAV(:)   ! Saved ABSDAT during reallocation
+    TYPE(XSCTYP), ALLOCATABLE :: XSCSAV(:)   ! Saved XSC during reallocation
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
@@ -82,8 +85,10 @@ SUBROUTINE REAXSC ( LUN, IGAS, NXT, FAIL, ERRMSG )
   ALLOCATE ( XSC(NXSC)%ABS(IOF) ) 
   XSC(NXSC)%ABS = ABSDAT(1:IOF)
 !
-  ALLOCATE ( XSC(NXSC)%ITRI(MAX(NPT-2,1),3) )
-  CALL TRIANG ( NXT, XSC(NXSC)%TEM, XSC(NXSC)%PRE, XSC(NXSC)%ITRI ) 
+  CALL TRIANG ( NXT, XSC(NXSC)%TEM, XSC(NXSC)%PRE, NTRI, IDXTRI )
+  XSC(NXSC)%NTRI = NTRI
+  ALLOCATE ( XSC(NXSC)%ITRI(NTRI,3) )
+  XSC(NXSC)%ITRI = IDXTRI
 !
 900 CONTINUE
   FAIL = IOS .NE. 0

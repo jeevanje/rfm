@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE WRTLOG ( MESSGE, LACCUM )
 !
 ! VERSION
+!   22NOV17 AD Temporary fix avoiding allocatable character strings
 !   01MAY17 AD F90 conversion of rfmlog.for. Tested.
 !
 ! DESCRIPTION
@@ -28,21 +29,26 @@ SUBROUTINE WRTLOG ( MESSGE, LACCUM )
     CHARACTER(*),      INTENT(IN) :: MESSGE ! Message to be written
     LOGICAL, OPTIONAL, INTENT(IN) :: LACCUM ! T=accumulate, F=write 
 !
+! LOCAL CONSTANTS
+    INTEGER(I4), PARAMETER :: NCH = 500 ! Max length of output message 
+!
 ! LOCAL VARIABLES
+    INTEGER(I4) :: IACC = 0 
     INTEGER(I4) :: IBRK ! Location to insert line break in text
     INTEGER(I4) :: IEND ! Pointer to location of last character in MESSGE
     INTEGER(I4) :: IOS  ! Saved value of IOSTAT for error messages
     INTEGER(I4) :: ISPC ! Location of space character
     INTEGER(I4) :: ISTA ! Pointer to start of MESSGE to be written out next
-    CHARACTER(:), SAVE, ALLOCATABLE :: ACCTXT ! Accumulated text 
-    CHARACTER(:), SAVE, ALLOCATABLE :: OUTTXT ! Output text
+    CHARACTER(NCH), SAVE :: ACCTXT = '' ! Accumulated text 
+    CHARACTER(NCH), SAVE :: OUTTXT = '' ! Output text
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
   IEND = LEN_TRIM ( MESSGE ) 
 !  OUTTXT = MESSGE(1:IEND)
   IF ( PRESENT ( LACCUM ) ) THEN
-    ACCTXT = ACCTXT // ' ' // MESSGE(1:IEND)
+    IACC = LEN_TRIM ( ACCTXT ) 
+    ACCTXT = ACCTXT(1:IACC) // ' ' // MESSGE(1:IEND)
     IF ( LACCUM ) RETURN             ! Normal exit with saved text
     OUTTXT = ACCTXT
     ACCTXT = ''

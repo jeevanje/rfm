@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE ATMPAR ( PARAM, VALUE, FAIL, ERRMSG )
 !
 ! VERSION
+!   28JUN18 AD Bug#9 - ensure ATM arrays initialised with HOM flag
 !   21JUN17 AD Original.
 !
 ! DESCRIPTION
@@ -12,10 +13,14 @@ SUBROUTINE ATMPAR ( PARAM, VALUE, FAIL, ERRMSG )
 ! VARIABLE KINDS
     USE KIND_DAT
 !
+! GLOBAL DATA
+    USE ATMCOM_DAT, ONLY: NATM, LENATM ! Max length of .atm profile label
+    USE FLGCOM_DAT, ONLY: HOMFLG       ! T = use homogeneous path
+!
 ! SUBROUTINES
+    USE ATMINI_SUB ! Initialise atmospheric profile data in ATMCOM
     USE ATMPRF_SUB ! Load profile into ATMCOM
     USE WRTLOG_SUB ! Write text message to log file
-    USE ATMCOM_DAT, ONLY: LENATM ! Max length of .atm profile label
 !
   IMPLICIT NONE
 !
@@ -43,7 +48,11 @@ SUBROUTINE ATMPAR ( PARAM, VALUE, FAIL, ERRMSG )
     FAIL = .TRUE.
     RETURN
   END IF
-!  
+!
+! If homogeneous path calculation it is possible that this is the first entry
+! in the *ATM section so ensure ATM arrays are defined with HGT=0.0
+  IF ( HOMFLG .AND. NATM .EQ. 0 ) CALL ATMINI ( (/ 0.0 /), .FALSE. ) 
+!
   CALL ATMPRF ( LABEL, (/ 1.0 /), (/ RVAL /), USEPAR, FAIL, ERRMSG ) 
   IF ( FAIL ) RETURN
   IF ( .NOT. USEPAR ) CALL WRTLOG ( 'W-ATMPAR: Parameter ' // TRIM(LABEL) // &

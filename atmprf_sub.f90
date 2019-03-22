@@ -3,9 +3,7 @@ CONTAINS
 SUBROUTINE ATMPRF ( LABEL, LEVPRF, VALPRF, USEPRF, FAIL, ERRMSG )
 !
 ! VERSION
-!   21JUN17 AD Use LEVATM instead of HGTATM for interpolation levels.
-!              Set TEMSFC.
-!   01MAY17 AD F90 original. Checked.
+!   17JAN18 AD Original.
 !
 ! DESCRIPTION
 !   Load profile into ATMCOM
@@ -100,10 +98,10 @@ SUBROUTINE ATMPRF ( LABEL, LEVPRF, VALPRF, USEPRF, FAIL, ERRMSG )
 ! load/update VMR profile
       IVMR = IDXGAS ( IDXMOL, IDXISO )
       IF ( IDXMOL .EQ. IDXAER ) THEN
-        CALL CHKPRF ( 'AER', VALPRF, FAIL, ERRMSG )
+        CALL CHKPRF ( 'EXT', VALPRF, FAIL, ERRMSG )
         IF ( FAIL ) RETURN
         EXTATM = INTERP ( LEVPRF, LEVATM, VALPRF )
-        IF ( GRAFLG ) CALL PRFGRA ( 'AER', IVMR ) 
+        IF ( GRAFLG ) CALL PRFGRA ( 'EXT', IVMR ) 
       ELSE
         CALL CHKPRF ( 'VMR', VALPRF, FAIL, ERRMSG )
         IF ( FAIL ) RETURN

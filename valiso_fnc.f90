@@ -3,7 +3,8 @@ CONTAINS
 LOGICAL FUNCTION VALISO ( IGAS, ISO ) 
 !
 ! VERSION
-!   01MAY17 AD Original. Checked.
+!   03MAY18 AD Bug#3 SAVE WRNLST array.
+!   01MAY17 AD Original.
 !
 ! DESCRIPTION
 !   Check recognised isotope
@@ -30,7 +31,7 @@ LOGICAL FUNCTION VALISO ( IGAS, ISO )
     INTEGER(I4)   :: IDXWRN    ! Encoded IGAS,ISO value
     INTEGER(I4)   :: NWRN = 0  ! No.different warnings so far
     CHARACTER(80) :: LOGMSG    ! Message sent to log file
-    INTEGER(I4), ALLOCATABLE :: WRNLST(:) ! List of IDXWRN values
+    INTEGER(I4), SAVE, ALLOCATABLE :: WRNLST(:) ! List of IDXWRN values
     INTEGER(I4), ALLOCATABLE :: WRNSAV(:) ! Saved WRNLST during reallocation
 !
 ! EXECUTABLE CODE -------------------------------------------------------------

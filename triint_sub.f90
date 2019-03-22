@@ -1,8 +1,9 @@
 MODULE TRIINT_SUB
 CONTAINS
-SUBROUTINE TRIINT ( XO, YO, N, X, Y, IDXTRI, IFIT, WFIT, XFIT, YFIT ) 
+SUBROUTINE TRIINT ( XO, YO, N, X, Y, NTRI, IDXTRI, IFIT, WFIT, XFIT, YFIT ) 
 !
 ! VERSION
+!   08FEB19 AD Bug#16 Add NTRI argument
 !   01MAY17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
@@ -32,6 +33,7 @@ SUBROUTINE TRIINT ( XO, YO, N, X, Y, IDXTRI, IFIT, WFIT, XFIT, YFIT )
     INTEGER(I4), INTENT(IN)  :: N           ! No.(x,y) coords in domain
     REAL(R4),    INTENT(IN)  :: X(N)        ! List of x-coords of domain points
     REAL(R4),    INTENT(IN)  :: Y(N)        ! List of y-coords of domain points
+    INTEGER(I4), INTENT(IN)  :: NTRI        ! Number of triangles
     INTEGER(I4), INTENT(IN)  :: IDXTRI(:,:) ! Indices of triangle vertices
     INTEGER(I4), INTENT(OUT) :: IFIT(3)     ! Indices of points used for interp.
     REAL(R4),    INTENT(OUT) :: WFIT(3)     ! Weights of points used for interp.
@@ -45,7 +47,6 @@ SUBROUTINE TRIINT ( XO, YO, N, X, Y, IDXTRI, IFIT, WFIT, XFIT, YFIT )
     INTEGER(I4) :: I,J,K ! Indices of original points X,Y
     INTEGER(I4) :: ISID  ! Side counter (of triangle)
     INTEGER(I4) :: ITRI  ! Triangle counters
-    INTEGER(I4) :: NTRI  ! Number of triangles constructed
     REAL(R4)    :: CIJO,CJKO,CKIO         ! Cross products of vectors
     REAL(R4)    :: CIJTOL, CJKTOL, CKITOL ! Cross-product tolerances
     REAL(R4)    :: DIJO, DJIO             ! Dot products of vectors
@@ -104,7 +105,7 @@ SUBROUTINE TRIINT ( XO, YO, N, X, Y, IDXTRI, IFIT, WFIT, XFIT, YFIT )
   END IF            
 !
 ! Continue from here for N > 2, ie if triangulation possible
-  NTRI = N - 2
+!  NTRI = N - 2    Bug#16 - note that NTRI can be greater than N-2 
 ! 
 ! First, find closest grid point to interpolation point and set to return value
 ! at this point if no other location is found.

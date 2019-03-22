@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE SPCRNG ( NAMGRD, GHZGRD, TYPGRD, NPT, PT1, PT2, PTD, FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   30DEC17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   Extract spectral range/resln from file
@@ -58,11 +58,12 @@ SUBROUTINE SPCRNG ( NAMGRD, GHZGRD, TYPGRD, NPT, PT1, PT2, PTD, FAIL, ERRMSG )
       OPEN ( UNIT=LUNTMP, FILE=NAMGRD, STATUS='OLD', ACTION='READ', &
              IOSTAT=IOS, ERR=100 ) 
       READ ( LUNTMP, '(A)', IOSTAT=IOS, ERR=100 ) REC80
-      IF ( REC80(1:1) .EQ. '!' ) GOTO 100
-      READ ( LUNTMP, '(A)', IOSTAT=IOS, ERR=100 ) REC80 
-      READ ( LUNTMP, '(A)', IOSTAT=IOS, ERR=100 ) REC80 ! Interp.Func.
-      IF ( REC80(1:1) .EQ. '!' ) GOTO 100
-      READ ( LUNTMP, *, IOSTAT=IOS, ERR=100 ) NTOT, NPT, PT1, PTD
+      REC80(1:1) = '!'    ! 1st record may not start with '!' character
+      DO WHILE ( REC80(1:1) .EQ. '!' )
+        READ ( LUNTMP, '(A)', IOSTAT=IOS, ERR=100 ) REC80 
+      END DO
+      IF ( REC80(1:3) .NE. 'lin' ) GOTO 100
+      READ ( LUNTMP, *, IOSTAT=IOS, ERR=900 ) NTOT, NPT, PT1, PTD
       GHZRNG = NTOT .LT. 0
       PT2 = PT1 + ( ABS(NTOT) - 1 ) * PTD
       PTD = 0.0       ! flag to indicate irregular grid
@@ -111,6 +112,7 @@ SUBROUTINE SPCRNG ( NAMGRD, GHZGRD, TYPGRD, NPT, PT1, PT2, PTD, FAIL, ERRMSG )
   END DO
 !
 ! If this point is reached, unable to successfully read any type of file
+900 CONTINUE
   TYPGRD = ' '
   FAIL = .TRUE.
   WRITE ( ERRMSG, * ) &

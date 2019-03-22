@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE JACISO ( IDXMOL, IDXISO, FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   07NOV17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   Check valid parameters for isotopic Jacobian
@@ -42,11 +42,13 @@ SUBROUTINE JACISO ( IDXMOL, IDXISO, FAIL, ERRMSG )
   IGAS = IDXGAS ( IDXMOL )  
 !
 ! Cannot introduce new isotopes if LUTs have already been loaded
-  IF ( ANY ( LFL%IGS .EQ. IGAS ) ) THEN
-    ERRMSG = 'F-JACISO: *JAC section should precede *LUT' & 
-             // ' section if defining isotopic Jac.'
-    FAIL = .TRUE.
-    RETURN
+  IF ( NLFL .GT. 0 ) THEN  ! Some LUTs already loaded
+    IF ( ANY ( LFL%IGS .EQ. IGAS ) ) THEN
+      ERRMSG = 'F-JACISO: *JAC section should precede *LUT' & 
+               // ' section if defining isotopic Jac.'
+      FAIL = .TRUE.
+      RETURN
+    END IF
   END IF
 !            
   CALL ADDVMR ( IGAS ) 

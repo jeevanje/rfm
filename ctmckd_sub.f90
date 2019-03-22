@@ -1,9 +1,9 @@
 MODULE CTMCKD_SUB
 CONTAINS
-SUBROUTINE CTMCKD ( ICLC ) 
+SUBROUTINE CTMCKD ( ILBL ) 
 !
 ! VERSION
-!   01MAY17 AD F90 conversion
+!   16NOV17 AD F90 conversion
 ! 
 ! DESCRIPTION    
 !   CKD H2O continuum
@@ -43,7 +43,7 @@ SUBROUTINE CTMCKD ( ICLC )
   IMPLICIT NONE
 !
 ! ARGUMENTS
-    INTEGER(I4), INTENT(IN) :: ICLC ! Index of calc path
+    INTEGER(I4), INTENT(IN) :: ILBL ! Index of LBL calc path
 !
 ! LOCAL CONSTANTS
     LOGICAL,  PARAMETER :: USE241 = .TRUE. ! T= Use v2.41, F= use v2.1
@@ -59,6 +59,7 @@ SUBROUTINE CTMCKD ( ICLC )
           1.00000,1.00000,1.00000 /)
 !
 ! LOCAL VARIABLES      
+    INTEGER(I4) :: ICLC   ! Index of calc path
     INTEGER(I4) :: IQAD   ! Counter for quadratic interp.pts (1:3)
     INTEGER(I4) :: IWD2   ! Counter for half-wide-mesh grid (0:NWID*2)
     INTEGER(I4) :: IWID   ! Counter for Widemesh intervals
@@ -77,6 +78,8 @@ SUBROUTINE CTMCKD ( ICLC )
     REAL(R4)    :: CTMPTH(0:NWD2) ! Continuum absorption for current path
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
+!
+  ICLC = IDXLBL(ILBL)
 !
   C11 = 0.5 * SNGL ( C2 ) / CLC(ICLC)%TEM
 !
@@ -162,9 +165,9 @@ SUBROUTINE CTMCKD ( ICLC )
     IWD2 = 2 * IWID - 3       ! -1, 1, 3, ...
     DO IQAD = 1, 3
       IWD2 = IWD2 + 1         ! 0,1,2,  2,3,4,  4,5,6
-      ABSWID(IQAD,IWID,ICLC) = ABSWID(IQAD,IWID,ICLC) + CTMPTH(IWD2)
+      ABSWID(IQAD,IWID,ILBL) = ABSWID(IQAD,IWID,ILBL) + CTMPTH(IWD2)
       IF ( USECNT ) &
-        CNTWID(IQAD,IWID,ICLC) = CNTWID(IQAD,IWID,ICLC) + CTMPTH(IWD2)
+        CNTWID(IQAD,IWID,ILBL) = CNTWID(IQAD,IWID,ILBL) + CTMPTH(IWD2)
     END DO
   END DO
 !

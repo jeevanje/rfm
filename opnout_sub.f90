@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE OPNOUT ( LUN, NAMTMP, FAIL, ERRMSG, IGAS, IJAC, ILEV, ISPC, ITAN )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   08NOV17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   Open spectral output files for current spectral range
@@ -14,7 +14,7 @@ SUBROUTINE OPNOUT ( LUN, NAMTMP, FAIL, ERRMSG, IGAS, IJAC, ILEV, ISPC, ITAN )
 !
 ! GLOBAL DATA
     USE FLGCOM_DAT ! Option flags
-    USE NAMCOM_DAT, ONLY: LENNAM ! Max length of output filename
+    USE NAMCOM_DAT, ONLY: DIRNAM, LENNAM ! output dir & Max length of filename
 !
 ! SUBROUTINES
     USE MAKNAM_SUB ! Construct filename for RFM output files
@@ -34,10 +34,10 @@ SUBROUTINE OPNOUT ( LUN, NAMTMP, FAIL, ERRMSG, IGAS, IJAC, ILEV, ISPC, ITAN )
     INTEGER(I4), OPTIONAL, INTENT(IN) :: ITAN   ! Tangent path index
 !
 ! LOCAL VARIABLES
-    INTEGER(I4)       :: IOS    ! Value of IOSTAT on OPEN
-    CHARACTER(11)     :: FORSTR ! Value for FORM keyword in OPEN statement
-    CHARACTER(LENNAM) :: NAMOUT ! Name of file actually opened, incl.RUNID
-    CHARACTER(7)      :: STASTR ! Value for STATUS keyword in OPEN statement
+    INTEGER(I4)         :: IOS    ! Value of IOSTAT on OPEN
+    CHARACTER(11)       :: FORSTR ! Value for FORM keyword in OPEN statement
+    CHARACTER(2*LENNAM) :: NAMOUT ! Name of file actually opened, incl.RUNID
+    CHARACTER(7)        :: STASTR ! Value for STATUS keyword in OPEN statement
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
@@ -47,6 +47,7 @@ SUBROUTINE OPNOUT ( LUN, NAMTMP, FAIL, ERRMSG, IGAS, IJAC, ILEV, ISPC, ITAN )
     CALL MAKNAM ( NAMTMP, NAMOUT, ISPC=ISPC, ITAN=ITAN, IJAC=IJAC, ILEV=ILEV )
   END IF
 !
+  NAMOUT = TRIM ( DIRNAM ) // TRIM ( NAMOUT ) 
   CALL WRTLOG ( 'I-OPNOUT: Opening output file: ' // NAMOUT ) 
 !
 ! Open file with appropriate STATUS, FORM according to NEWFLG, BINFLG

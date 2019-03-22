@@ -1,7 +1,7 @@
 MODULE FLGCOM_DAT
 !
 ! VERSION
-!   01JUN17 AD F90 conversion. Checked.
+!   19DEC17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   RFM option flags
@@ -58,6 +58,7 @@ MODULE FLGCOM_DAT
     LOGICAL :: SFCFLG = .FALSE. ! T = Allow for opaque surface under atmosphere
     LOGICAL :: SHHFLG = .FALSE. ! T = suppress progress messages
     LOGICAL :: SHPFLG = .FALSE. ! T = use non-Voigt line shapes
+    LOGICAL :: SVDFLG = .FALSE. ! T = SVD-compressed LUTs
     LOGICAL :: TABFLG = .FALSE. ! T = output tabulated absorption coefficients
     LOGICAL :: TRAFLG = .FALSE. ! T = output Transmittance spectra
     LOGICAL :: VRTFLG = .FALSE. ! T = flux-type calcs without hemisph.integ.

@@ -1,9 +1,9 @@
 MODULE CTMCO2_SUB
 CONTAINS
-SUBROUTINE CTMCO2 ( ICLC ) 
+SUBROUTINE CTMCO2 ( ILBL ) 
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   16NOV17 AD F90 conversion. Checked.
 ! 
 ! DESCRIPTION    
 !   CO2 continuum
@@ -34,7 +34,7 @@ SUBROUTINE CTMCO2 ( ICLC )
   IMPLICIT NONE
 !
 ! ARGUMENTS
-    INTEGER(I4), INTENT(IN) :: ICLC ! Path# for calculation
+    INTEGER(I4), INTENT(IN) :: ILBL ! Index of LBL calc path
 !
 ! LOCAL CONSTANTS
     REAL(R4), PARAMETER :: PREREF = 1.0 ! Ref. pressure [atm]
@@ -43,6 +43,7 @@ SUBROUTINE CTMCO2 ( ICLC )
     REAL(R4), PARAMETER :: WGT296 = 1.0/(260.0-296.0)/(230.0-296.0) !  4.21E-4
 !
 ! LOCAL VARIABLES      
+    INTEGER(I4) :: ICLC   ! Index of calc path segment
     INTEGER(I4) :: IQAD   ! Counter for quadratic interp.pts (1:3)
     INTEGER(I4) :: IWID   ! Counter for widemesh intervals (1:NWID)
     INTEGER(I4) :: IWD2   ! Counter for half-wide-mesh grid (0:NWID*2)
@@ -53,6 +54,8 @@ SUBROUTINE CTMCO2 ( ICLC )
     REAL(R4)    :: CTMPTH(0:NWD2) ! Continuum absorption for current path
 !
 ! EXECUTABLE CODE --------------------------------------------------------------
+!
+  ICLC = IDXLBL(ILBL)
 !
   DT230 = CLC(ICLC)%TEM - 230.0
   DT260 = CLC(ICLC)%TEM - 260.0
@@ -78,9 +81,9 @@ SUBROUTINE CTMCO2 ( ICLC )
     IWD2 = 2 * IWID - 3       ! -1, 1, 3, ...
     DO IQAD = 1, 3
       IWD2 = IWD2 + 1         ! 0,1,2,  2,3,4,  4,5,6
-      ABSWID(IQAD,IWID,ICLC) = ABSWID(IQAD,IWID,ICLC) + CTMPTH(IWD2)
+      ABSWID(IQAD,IWID,ILBL) = ABSWID(IQAD,IWID,ILBL) + CTMPTH(IWD2)
       IF ( USECNT ) &
-        CNTWID(IQAD,IWID,ICLC) = CNTWID(IQAD,IWID,ICLC) + CTMPTH(IWD2) 
+        CNTWID(IQAD,IWID,ILBL) = CNTWID(IQAD,IWID,ILBL) + CTMPTH(IWD2) 
     END DO
   END DO
 !

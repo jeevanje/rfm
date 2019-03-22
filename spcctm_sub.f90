@@ -3,7 +3,8 @@ CONTAINS
 SUBROUTINE SPCCTM 
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   02NOV18 AD New H2O continuum MT_CKD v3.2
+!   16NOV17 AD F90 conversion. Checked.
 ! 
 ! DESCRIPTION    
 !   Calculate continuum absorption
@@ -18,8 +19,10 @@ SUBROUTINE SPCCTM
     USE CLCCOM_DAT ! Calculated path segments
     USE GASCOM_DAT ! Molecule and isotope data
     USE IDXCON_DAT ! RFM/HITRAN indices for specific molecules
+    USE WIDCOM_DAT, ONLY: NLBL, IDXLBL ! Indices for LBL path segments
 !
 ! SUBROUTINES
+    USE CTMC25_SUB ! MT_CKD v2.5 H2O continuum
     USE CTMCKD_SUB ! CKD H2O continuum
     USE CTMCO2_SUB ! CO2 continuum
     USE CTMH2O_SUB ! H2O continuum
@@ -29,30 +32,35 @@ SUBROUTINE SPCCTM
   IMPLICIT NONE
 !
 ! LOCAL CONSTANTS
-    LOGICAL, PARAMETER :: USECKD = .FALSE. ! F=use (new) MT_CKD H2O ctm, 
-!                                            T=use old CKD
+    LOGICAL, PARAMETER :: USECKD = .FALSE. ! T = use old CKD H2O continuum
+    LOGICAL, PARAMETER :: USEC25 = .FALSE. ! T = use old MT_CKD v2.5 H2O ctm.
+!                                          ! F = use new MT_CKD v3.2 H2O ctm.
 ! LOCAL VARIABLES
     INTEGER(I4) :: IGAS   ! Gas counter
     INTEGER(I4) :: ICLC   ! Gas/segment Path counter
+    INTEGER(I4) :: ILBL   ! Counter for line-by-line path segments
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
-  DO ICLC = 1, NCLC
+  DO ILBL = 1, NLBL
+    ICLC = IDXLBL(ILBL)
     IGAS = CLC(ICLC)%IGS
     IF ( GAS(IGAS)%CTM ) THEN
       SELECT CASE ( GAS(IGAS)%IDM )
       CASE ( IDXH2O ) 
         IF ( USECKD ) THEN 
-          CALL CTMCKD ( ICLC )
+          CALL CTMCKD ( ILBL )
+        ELSE IF ( USEC25 ) THEN
+          CALL CTMC25 ( ILBL ) 
         ELSE
-          CALL CTMH2O ( ICLC )
+          CALL CTMH2O ( ILBL )
         END IF
       CASE ( IDXCO2 ) 
-        CALL CTMCO2 ( ICLC )
+        CALL CTMCO2 ( ILBL )
       CASE ( IDXO2 ) 
-        CALL CTMO2 ( ICLC )
+        CALL CTMO2 ( ILBL )
       CASE ( IDXN2 ) 
-        CALL CTMN2 ( ICLC )
+        CALL CTMN2 ( ILBL )
       END SELECT
     END IF
   END DO

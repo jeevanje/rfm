@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE RADSFC ( OPT, RAD, JDX )
 !
 ! VERSION
-!   01JUL17 AD F90 Original.
+!   01JUL17 AD F90 Original. Checked.
 !
 ! DESCRIPTION
 !   Surface contribution to radiative transfer calculation

@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE RFMDRV ( FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion of rfminp.for. Tested.
+!   20DEC17 AD F90 conversion of rfminp.for. Tested.
 !
 ! DESCRIPTION
 !   Read RFM driver table
@@ -32,12 +32,14 @@ SUBROUTINE RFMDRV ( FAIL, ERRMSG )
     USE DRVNAM_SUB ! Read RFM driver table user-defined filename
     USE DRVNTE_SUB ! Read RFM driver table *NTE section
     USE DRVOBS_SUB ! Read RFM driver table *OBS section
+    USE DRVOUT_SUB ! Read RFM driver table *OUT section
     USE DRVPHY_SUB ! Read RFM driver table *PHY section
     USE DRVREJ_SUB ! Read RFM driver table *REJ section
     USE DRVSFC_SUB ! Read RFM driver table *SFC section
     USE DRVSHP_SUB ! Read RFM driver table *SHP section
     USE DRVSKP_SUB ! Skip RFM driver table section
     USE DRVSPC_SUB ! Read RFM driver table *SPC section
+    USE DRVSVD_SUB ! Read RFM driver table *SVD section
     USE DRVTAN_SUB ! Read RFM driver table *TAN section
     USE DRVXSC_SUB ! Read RFM driver table *XSC section
     USE OPNFIL_SUB ! Open input file
@@ -86,6 +88,7 @@ SUBROUTINE RFMDRV ( FAIL, ERRMSG )
     CASE ('*NTE') ; CALL DRVNTE ( LUNDRV, FAIL, ERRMSG )
     CASE ('*OBS') ; CALL DRVOBS ( LUNDRV, FAIL, ERRMSG )
     CASE ('*OPT') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
+    CASE ('*OUT') ; CALL DRVOUT ( LUNDRV, FAIL, ERRMSG )
     CASE ('*PHY') ; CALL DRVPHY ( LUNDRV, FAIL, ERRMSG )
     CASE ('*PRF') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
     CASE ('*PTH') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
@@ -94,6 +97,7 @@ SUBROUTINE RFMDRV ( FAIL, ERRMSG )
     CASE ('*RJT') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
     CASE ('*SFC') ; CALL DRVSFC ( LUNDRV, FAIL, ERRMSG ) 
     CASE ('*SHP') ; CALL DRVSHP ( LUNDRV, FAIL, ERRMSG ) 
+    CASE ('*SVD') ; CALL DRVSVD ( LUNDRV, FAIL, ERRMSG )
     CASE ('*TAB') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
     CASE ('*TRA') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
     CASE ('*WID') ; CALL DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )

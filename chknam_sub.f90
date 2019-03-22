@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE CHKNAM ( FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 original. Checked.
+!   08NOV17 AD F90 original. Checked.
 !
 ! DESCRIPTION
 !   Check RFM output filename templates
@@ -39,8 +39,8 @@ SUBROUTINE CHKNAM ( FAIL, ERRMSG )
     LOGICAL           :: LMULTI ! T = multiple output files for type required
     INTEGER(I4)       :: IPT    ! Pointer to '*' in supplied filename
     INTEGER(I4)       :: ITYP   ! Counter for different output file types
-    CHARACTER(LENNAM) :: NAMLOW ! Lower case version of NAMFIL
-    CHARACTER(LENNAM), POINTER :: NAMFIL ! Output file template
+    CHARACTER(LENNAM) :: LOWNAM ! Lower case version of FILNAM
+    CHARACTER(LENNAM), POINTER :: FILNAM ! Output file template
 !
 ! EXECUTABLE CODE --------------------------------------------------------------
 !
@@ -48,72 +48,72 @@ SUBROUTINE CHKNAM ( FAIL, ERRMSG )
     SELECT CASE ( TYPLST(ITYP) )
     CASE ( 'ABS' ) 
       IF ( .NOT. ABSFLG ) CYCLE
-      NAMFIL => NAMABS
+      FILNAM => ABSNAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'BBT' ) 
       IF ( .NOT. BBTFLG ) CYCLE
-      NAMFIL => NAMBBT
+      FILNAM => BBTNAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'COO' ) 
       IF ( .NOT. COOFLG ) CYCLE
-      NAMFIL => NAMCOO
+      FILNAM => COONAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'OPT' ) 
       IF ( .NOT. OPTFLG ) CYCLE
-      NAMFIL => NAMOPT
+      FILNAM => OPTNAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'PRF' ) 
       IF ( .NOT. GRAFLG ) CYCLE
-      NAMFIL => NAMPRF
+      FILNAM => PRFNAM
       LMULTI = NPSI .GT. 1 
     CASE ( 'PTH' ) 
       IF ( .NOT. PTHFLG ) CYCLE
-      NAMFIL => NAMPTH
+      FILNAM => PTHNAM
       LMULTI = NTAN .GT. 1 .OR. NPSI .GT. 1
     CASE ( 'RAD' ) 
       IF ( .NOT. RADFLG ) CYCLE
-      NAMFIL => NAMRAD
+      FILNAM => RADNAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'RJT' ) 
       IF ( .NOT. RJTFLG ) CYCLE
-      NAMFIL => NAMRJT
+      FILNAM => RJTNAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'TAB' ) 
       IF ( .NOT. TABFLG ) CYCLE
-      NAMFIL => NAMTAB
+      FILNAM => TABNAM
       LMULTI = NGAS .GT. 1 .OR. NSPC .GT. 1
     CASE ( 'TRA' ) 
       IF ( .NOT. TRAFLG ) CYCLE
-      NAMFIL => NAMTRA
+      FILNAM => TRANAM
       LMULTI = NTAN .GT. 1 .OR. NSPC .GT. 1 .OR. JACFLG .OR. LEVFLG
     CASE ( 'WID' ) 
       IF ( .NOT. WIDFLG ) CYCLE
-      NAMFIL => NAMWID
+      FILNAM => WIDNAM
       LMULTI = NGAS .GT. 1 .OR. NSPC .GT. 1
     CASE DEFAULT
       STOP 'F-CHKNAM: Logical error'
     END SELECT
 !
 ! If multiple output files required, check filename has a '*' symbol
-    IF ( LMULTI .AND. INDEX ( NAMFIL, '*') .EQ. 0 ) THEN
+    IF ( LMULTI .AND. INDEX ( FILNAM, '*') .EQ. 0 ) THEN
       FAIL = .TRUE. 
       ERRMSG = 'F-CHKNAM: ''*'' character required in ' // TYPLST(ITYP) // &
                 ' filename template'
       RETURN
     END IF
 !
-    NAMLOW = LOCASE ( NAMFIL ) 
+    LOWNAM = LOCASE ( FILNAM ) 
     IF ( BINFLG ) THEN
-      IPT = INDEX ( NAMLOW, '.asc' ) 
-      IF ( IPT .NE. 0 ) NAMFIL(IPT:IPT+3) = '.bin'
+      IPT = INDEX ( LOWNAM, '.asc' ) 
+      IF ( IPT .NE. 0 ) FILNAM(IPT:IPT+3) = '.bin'
     ELSE
-      IPT = INDEX ( NAMLOW, '.bin' ) 
-      IF ( IPT .NE. 0 ) NAMFIL(IPT:IPT+3) = '.asc'
+      IPT = INDEX ( LOWNAM, '.bin' ) 
+      IF ( IPT .NE. 0 ) FILNAM(IPT:IPT+3) = '.asc'
     END IF
 !
   END DO
 !
-  NULLIFY ( NAMFIL )
+  NULLIFY ( FILNAM )
 !
 END SUBROUTINE CHKNAM
 END MODULE CHKNAM_SUB

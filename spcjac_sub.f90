@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE SPCJAC 
 !
 ! VERSION
+!   30MAY18 AD Bug#7 Only subtract for TAN%CLC is TRUE
 !   01MAY17 AD F90 conversion of rfmjac.for. Checked.
 !
 ! DESCRIPTION
@@ -15,6 +16,7 @@ SUBROUTINE SPCJAC
 ! GLOBAL DATA
     USE FULCOM_DAT ! Full grid data 
     USE JACCOM_DAT ! Jacobian data
+    USE TANCOM_DAT ! Tangent path data
 !
   IMPLICIT NONE
 !
@@ -25,7 +27,8 @@ SUBROUTINE SPCJAC
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
-  DO ITAN = 1, NTNJAC
+  DO ITAN = 1, NTNJAC                 ! Loop over all unperturbed paths
+    IF ( .NOT. TAN(ITAN)%CLC ) CYCLE
     DO IJAC = 1, NJAC 
       JTAN = ITNJAC(ITAN,IJAC) 
       IF ( JTAN .EQ. 0 ) CYCLE

@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE SFCEMS ( EMSSTR, FAIL, ERRMSG )
 !
 ! VERSION
-!   21JUN17 AD F90 adpated from sfcfil.for
+!   21JUN17 AD F90 adpated from sfcfil.for. Checked.
 !
 ! DESCRIPTION
 !   Read surface emissivity data
@@ -34,8 +34,8 @@ SUBROUTINE SFCEMS ( EMSSTR, FAIL, ERRMSG )
     CHARACTER(80), INTENT(OUT) :: ERRMSG ! Error message if FAIL is TRUE
 !
 ! LOCAL VARIABLES      
-    INTEGER(I4) :: ISFC   ! Counter for SFC tabulation points
     INTEGER(I4) :: IOS    ! Saved value of IOSTAT for error message
+    INTEGER(I4) :: ISFC   ! Counter for SFC tabulation points
     REAL(R8)    :: DWSFC  ! Wno [cm-1] increment for emissivity values
     REAL(R8)    :: W1SFC  ! Wno [cm-1] of 1st emissivity value in file
     REAL(R8)    :: W2SFC  ! Wno [cm-1] of last emissivity value in file

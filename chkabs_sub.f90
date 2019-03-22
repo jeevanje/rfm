@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE CHKABS ( FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion of abschk.for. Checked.
+!   20DEC17 AD F90 conversion of abschk.for.
 !
 ! DESCRIPTION
 !   Check information available for all absorbers
@@ -15,6 +15,8 @@ SUBROUTINE CHKABS ( FAIL, ERRMSG )
 ! GLOBAL DATA
     USE GASCOM_DAT ! Molecule and isotope data
     USE LFLCOM_DAT ! Look-Up Table files
+    USE SFLCOM_DAT ! SVD-compressed LUT files
+    USE SPCCOM_DAT ! Spectral range data
 !
   IMPLICIT NONE
 !
@@ -23,20 +25,39 @@ SUBROUTINE CHKABS ( FAIL, ERRMSG )
     CHARACTER(80), INTENT(OUT) :: ERRMSG ! Error message written if FAIL is TRUE
 !
 ! LOCAL VARIABLES
-    INTEGER(I4) :: IGAS ! Absorber counter
+    LOGICAL     :: LSOURC ! T=spec.data source defined by LUT or SVD
+    INTEGER(I4) :: IGAS   ! Absorber counter
+    INTEGER(I4) :: ISPC   ! Spectran range counter
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
   DO IGAS = 1, NGAS
-    IF ( NLFL .GT. 0 ) THEN                      ! Using (some) LUTs
-      IF ( ALL ( IDXLFL(IGAS,:) .GT. 0 ) ) CYCLE ! LUTs for all spectral ranges
-    END IF
-    IF ( .NOT. GAS(IGAS)%HIT .AND. .NOT. GAS(IGAS)%XSC .AND. &
-         GAS(IGAS)%COD .NE. 'air' ) THEN
-      FAIL = .TRUE.
-      ERRMSG = 'F-CHKABS: No spectroscopic data for ' // GAS(IGAS)%COD 
-      RETURN
-    END IF
+    IF ( GAS(IGAS)%COD .EQ. 'air' ) CYCLE     ! No absorber data reqd for air
+    DO ISPC = 1, NSPC
+      LSOURC = .FALSE.
+      IF ( NLFL .GT. 0 ) THEN                      ! Using (some) LUTs
+        LSOURC = IDXLFL(IGAS,ISPC) .GT. 0 
+      END IF
+      IF ( NSFL .GT. 0 ) THEN
+        IF ( IDXSFL(IGAS,ISPC) .GT. 0 ) THEN
+          IF ( LSOURC ) THEN
+            FAIL = .TRUE.
+            ERRMSG = 'F-CHKABS: Both LUT and SVD defined for ' // &
+                     TRIM ( GAS(IGAS)%COD ) // ' for spectral range ' // &
+                     TRIM ( SPC(ISPC)%LAB ) 
+            RETURN
+          END IF
+          LSOURC = .TRUE.
+        END IF
+      END IF
+      IF ( .NOT. ( LSOURC .OR. GAS(IGAS)%HIT .OR. GAS(IGAS)%XSC ) ) THEN
+        FAIL = .TRUE.
+        ERRMSG = 'F-CHKABS: No spectroscopic data for ' // &
+                 TRIM ( GAS(IGAS)%COD ) // ' for spectral range ' // &
+                 TRIM ( SPC(ISPC)%LAB )
+        RETURN
+      END IF
+    END DO
   END DO 
 !
 ! Normal exit

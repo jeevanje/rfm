@@ -1,8 +1,9 @@
 MODULE TRIANG_SUB
 CONTAINS
-SUBROUTINE TRIANG ( N, X, Y, IDXTRI ) 
+SUBROUTINE TRIANG ( N, X, Y, NTRI, IDXTRI ) 
 !
 ! VERSION
+!   08FEB19 AD Bug#16 Add NTRI argument
 !   01MAY17 AD F90 conversion of part of triang.for. Checked.
 !
 ! DESCRIPTION
@@ -30,7 +31,9 @@ SUBROUTINE TRIANG ( N, X, Y, IDXTRI )
     INTEGER(I4), INTENT(IN)  :: N           ! No. pairs of (x,y) coordinates
     REAL(R4),    INTENT(IN)  :: X(:)        ! x-coordinates of points in field
     REAL(R4),    INTENT(IN)  :: Y(:)        ! y-coordinates of points in field
-    INTEGER(I4), INTENT(OUT) :: IDXTRI(:,:) ! Indices of triangle vertices
+    INTEGER(I4), INTENT(OUT) :: NTRI        ! Number of triangles constructed
+    INTEGER(I4), ALLOCATABLE, &
+                 INTENT(OUT) :: IDXTRI(:,:) ! Indices of triangle vertices
 !
 ! LOCAL CONSTANTS
     REAL(R4), PARAMETER :: SMALL = 1.0E-5 !  Min sig diff in cosine. 
@@ -46,7 +49,6 @@ SUBROUTINE TRIANG ( N, X, Y, IDXTRI )
     INTEGER(I4) :: ITRI,JTRI,KTRI,LTRI ! Triangle counters
     INTEGER(I4) :: IXMAX        ! (Original) Index of max value of x-coordinate
     INTEGER(I4) :: NPER         ! Number of perimeter points
-    INTEGER(I4) :: NTRI         ! Number of triangles constructed
     REAL(R4)    :: CIJK,CIJL,CJKL,CKIL ! Cross products of vectors
     REAL(R4)    :: CKLI,CLIJ    ! Cross products of vectors 
     REAL(R4)    :: COSIJK, COSKLI ! Cosine of angles IJK and KLI
@@ -63,14 +65,17 @@ SUBROUTINE TRIANG ( N, X, Y, IDXTRI )
     REAL(R4)    :: UIJ,UIL,UKI  ! x-coordinate of unit vectors along perimeter
     REAL(R4)    :: VIJ,VIL,VKI  ! y-coordinate of unit vectors along perimeter
     REAL(R4)    :: XMAX         ! Maximum value of x-coordinate
+    INTEGER(I4), ALLOCATABLE :: IDXSAV(:,:) ! Saved IDXTRI during reallocation
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
 ! Deal with special cases of N=1 and N=2
   IF ( N .EQ. 1 ) THEN  ! replicate (x,y) coordinate 3 times
+    ALLOCATE ( IDXTRI(1,3) )
     IDXTRI(1,:) = 1
     RETURN
   ELSE IF ( N .EQ. 2 ) THEN ! replicate 1st (x,y) coordinate twice
+    ALLOCATE ( IDXTRI(1,3) ) 
     IDXTRI(1,1:2) = 1
     IDXTRI(1,3) = 2
     RETURN
@@ -132,6 +137,7 @@ SUBROUTINE TRIANG ( N, X, Y, IDXTRI )
 ! Also check if perimeter section subtends a finite angle at IXMAX: if it 
 ! does then the grid has a finite area (otherwise it is a straight line)
   NTRI = NPER - 2
+  ALLOCATE ( IDXTRI(NTRI,3) )
   FINITE = .FALSE.
   DO ITRI = 1, NTRI
     I = IXMAX
@@ -176,6 +182,9 @@ SUBROUTINE TRIANG ( N, X, Y, IDXTRI )
           INSIDE = DLIJ.LT.0.0 .OR. DLJK.LT.0.0 .OR. DLKI.LT.0.0
         END IF
         IF ( INSIDE ) THEN
+          CALL MOVE_ALLOC ( IDXTRI, IDXSAV ) 
+          ALLOCATE ( IDXTRI(NTRI+2,3) )
+          IDXTRI(1:NTRI,:) = IDXSAV
           IDXTRI(ITRI,3) = L        ! ITRI becomes IJL
           IDXTRI(NTRI+1,1) = I      ! NTRI+1 becomes IKL
           IDXTRI(NTRI+1,2) = K

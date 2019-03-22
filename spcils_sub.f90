@@ -3,6 +3,7 @@ CONTAINS
 SUBROUTINE SPCILS ( ISPC ) 
 !
 ! VERSION
+!   30NOV18 AD Bug#12 Set IRRFUL = .FALSE. after convolution
 !   01MAY17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
@@ -89,6 +90,7 @@ SUBROUTINE SPCILS ( ISPC )
   CALL MOVE_ALLOC ( RADILS, RADFUL )
   CALL MOVE_ALLOC ( TRAILS, TRAFUL )
   NFUL = NOUT
+  IRRFUL = .FALSE.  ! Full grid is always regular after any convolution
 !
   DEALLOCATE ( WNOFUL )
   ALLOCATE ( WNOFUL(NFUL) )

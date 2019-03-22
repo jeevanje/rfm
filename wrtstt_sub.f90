@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE WRTSTT ( ISPC, FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   08NOV17 AD F90 conversion. Checked.
 !
 ! DESCRIPTION
 !   Write widemesh statistics
@@ -17,7 +17,7 @@ SUBROUTINE WRTSTT ( ISPC, FAIL, ERRMSG )
     USE HDRCOM_DAT ! Output header data
     USE IDXCON_DAT ! RFM/HITRAN indices for specific molecules
     USE STTCOM_DAT ! Widemesh statistics
-    USE NAMCOM_DAT, ONLY: NAMWID ! Name of widemesh stats output file
+    USE NAMCOM_DAT, ONLY: WIDNAM ! Name of widemesh stats output file
     USE RFMLUN_DAT, ONLY: LUNTMP ! LUN for temporarily open files
 !
 ! SUBROUTINES
@@ -86,7 +86,7 @@ SUBROUTINE WRTSTT ( ISPC, FAIL, ERRMSG )
   END DO
 !
   DO IGAS = MGAS, NGAS
-    CALL OPNOUT ( LUNTMP, NAMWID, FAIL, ERRMSG, ISPC=ISPC, IGAS=IGAS )
+    CALL OPNOUT ( LUNTMP, WIDNAM, FAIL, ERRMSG, ISPC=ISPC, IGAS=IGAS )
     IF ( IGAS .EQ. 0 ) THEN
       WRITE ( LUNTMP, '(A)', IOSTAT=IOS, ERR=900 ) &
         '! Total Widemesh Line count created by RFM v.'// VIDHDR

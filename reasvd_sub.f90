@@ -1,13 +1,13 @@
-MODULE LUTSVD_SUB
+MODULE REASVD_SUB
 CONTAINS
-SUBROUTINE LUTSVD ( LUNSVD, NAMSVD, ISVD, NLREQ, FAIL, ERRMSG )
+SUBROUTINE REASVD ( LUNSVD, NAMSVD, ISVD, NLREQ, FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   19DEC17 AD F90 conversion.
 !
 ! DESCRIPTION
 !   Load SVD-compressed LUT data from file
-!   Called by INILUT for each SVD-LUT file.
+!   Called by INISVD for each SVD-LUT file.
 !
 ! VARIABLE KINDS
     USE KIND_DAT
@@ -62,7 +62,7 @@ SUBROUTINE LUTSVD ( LUNSVD, NAMSVD, ISVD, NLREQ, FAIL, ERRMSG )
     CALL WRTLOG ( RECORD ) 
   ELSE 
     FAIL = .TRUE. 
-    ERRMSG = 'F-LUTSVD: 2nd record of file does not start'// &
+    ERRMSG = 'F-REASVD: 2nd record of file does not start'// &
              ' with expected ''#'' character'
     RETURN
   END IF
@@ -106,7 +106,7 @@ SUBROUTINE LUTSVD ( LUNSVD, NAMSVD, ISVD, NLREQ, FAIL, ERRMSG )
 900 CONTINUE
   FAIL = IOS .NE. 0 
   IF ( FAIL ) WRITE ( ERRMSG, * ) &
-    'F-LUTSVD: I/O failure on SVD LUT file. IOSTAT=', IOS
+    'F-REASVD: I/O failure on SVD LUT file. IOSTAT=', IOS
 !
-END SUBROUTINE LUTSVD
-END MODULE LUTSVD_SUB
+END SUBROUTINE REASVD
+END MODULE REASVD_SUB

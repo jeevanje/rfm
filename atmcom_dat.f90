@@ -1,6 +1,7 @@
 MODULE ATMCOM_DAT
 !
 ! VERSION
+!   28JUN18 AD Bug#9 Initialise NATM=0 to indicate 'not yet defined'
 !   21JUN17 AD Add IATSFC, FIXPRE, SETHGT, LEVATM
 !   01MAY17 AD F90 conversion. Checked.
 !
@@ -24,7 +25,7 @@ MODULE ATMCOM_DAT
     LOGICAL     :: SETTEM = .FALSE. ! T = Temperature profile set
     INTEGER(I4) :: IATSFC = 1       ! Index of surface level
     INTEGER(I4) :: IAXVMR           ! Index of aerosol extinction profile
-    INTEGER(I4) :: NATM             ! No. atmospheric layers for profiles
+    INTEGER(I4) :: NATM = 0         ! No. atmospheric layers for profiles
     INTEGER(I4) :: NVIB             ! No. diff. Vibrational temp profiles
     INTEGER(I4) :: NVMR             ! No. different VMR profiles
     REAL(R4)    :: HGTSFC           ! Height [km] of bottom of atmosphere

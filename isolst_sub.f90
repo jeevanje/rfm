@@ -3,7 +3,10 @@ CONTAINS
 SUBROUTINE ISOLST ( IDXMOL, NISO, WGTISO )
 !
 ! VERSION
-!   01JUN17 AD F90 version. Checked.
+!   04MAY18 AD Add HITRAN2016 isotopes/molecules: add H2O-262, CO2-737, 
+!              change#48 C3H8>C2N2, #50 BrO>SO, #51 GeH4>C3H4, #52 C3H8>CH3
+!              #53 C2N2>CS2,                
+!   01JUN17 AD F90 version.
 !
 ! DESCRIPTION
 !   List isotopomer weights of specific molecule
@@ -26,10 +29,10 @@ SUBROUTINE ISOLST ( IDXMOL, NISO, WGTISO )
 ! Effectively these are constants but have to be stored as variables in order to
 ! use WGT as a pointer
 !
-! H2O #1                           161  181  171  162  182  172
-    REAL(R4), TARGET :: WGT01(6) = (/ 18., 20., 19., 19., 21., 20./)
-! CO2 #2                           626  636  628  627  638  637  828  827  727  838  837
-    REAL(R4), TARGET :: WGT02(11) = (/ 44., 45., 46., 45., 47., 46., 48., 47., 46., 49., 48. /)
+! H2O #1                             161  181  171  162  182  172  262
+    REAL(R4), TARGET :: WGT01(7) = (/ 18., 20., 19., 19., 21., 20., 20./)
+! CO2 #2                              626  636  628  627  638  637  828  827  727  838  837  737 
+    REAL(R4), TARGET :: WGT02(12) = (/ 44., 45., 46., 45., 47., 46., 48., 47., 46., 49., 48., 47. /)
 ! O3 #3                          666  668  686  667  676
     REAL(R4), TARGET :: WGT03(5) = (/ 48., 50., 50., 49., 49. /)
 ! N2O #4                         446  456  546  448  447
@@ -78,7 +81,7 @@ SUBROUTINE ISOLST ( IDXMOL, NISO, WGTISO )
     REAL(R4), TARGET :: WGT25(1) = (/ 34. /)
 ! C2H2 #26                       1221 1231 1222
     REAL(R4), TARGET :: WGT26(3) = (/ 26., 27., 27. /)
-! C2H6 #27                       1221 1231*  *Geisa
+! C2H6 #27                       1221 1231
     REAL(R4), TARGET :: WGT27(2) = (/ 30., 31. /)
 ! PH3 #28                        1111
     REAL(R4), TARGET :: WGT28(1) = (/ 34. /)
@@ -120,26 +123,35 @@ SUBROUTINE ISOLST ( IDXMOL, NISO, WGTISO )
     REAL(R4), TARGET :: WGT46(4) = (/ 44., 46., 45., 45. /)               
 ! SO3 #47                         26
     REAL(R4), TARGET :: WGT47(1) = (/ 80. /)               
-! C3H8 #48                        ? abbreviation not known
-    REAL(R4), TARGET :: WGT48(1) = (/ 44. /)
-! COCl2 #49                       255 257 277
+! C2N2 #48                           4224
+    REAL(R4), TARGET :: WGT48(1) = (/ 52. /)
+! COCl2 #49                         2655 2657 2677
     REAL(R4), TARGET :: WGT49(3) = (/ 98., 102., 104. /)
+! SO #50                              26   46   28 
+    REAL(R4), TARGET :: WGT50(3) = (/ 48., 50., 50. /)
+! C3H4 #51                          1221
+    REAL(R4), TARGET :: WGT51(1) = (/ 40. /)
+! CH3  #52                          2111
+    REAL(R4), TARGET :: WGT52(1) = (/ 15. /)
+! CS2  #53                           222  224  223  232
+    REAL(R4), TARGET :: WGT53(4) = (/ 76., 78., 77., 77. /)
+!
 ! BrO #50                         56
-    REAL(R4), TARGET :: WGT50(1) = (/ 96. /)               
+!    REAL(R4), TARGET :: WGT50(1) = (/ 96. /)               
 !
 ! GEISA molecules
 ! GeH4 #51                       411*
-    REAL(R4), TARGET :: WGT51(1) = (/ 77. /)           
+!    REAL(R4), TARGET :: WGT51(1) = (/ 77. /)           
 ! C3C8 #52                       221*
-    REAL(R4), TARGET :: WGT52(1) = (/ 44. /)               
+!    REAL(R4), TARGET :: WGT52(1) = (/ 44. /)               
 ! C2N2 #53                       224*
-    REAL(R4), TARGET :: WGT53(1) = (/ 52. /)               
+!    REAL(R4), TARGET :: WGT53(1) = (/ 52. /)               
 ! C3H4 #54                       341*
-    REAL(R4), TARGET :: WGT54(1) = (/ 40. /)               
+!    REAL(R4), TARGET :: WGT54(1) = (/ 40. /)               
 ! HNC #55                        142*
-    REAL(R4), TARGET :: WGT55(1) = (/ 27. /)               
+!    REAL(R4), TARGET :: WGT55(1) = (/ 27. /)               
 ! C2H6 #56                      2211
-    REAL(R4), TARGET :: WGT56(1) = (/ 30. /)
+!    REAL(R4), TARGET :: WGT56(1) = (/ 30. /)
 !
     REAL(R4), POINTER :: WGT(:)   ! used to point to appropriate WGTnn array
 !
@@ -201,9 +213,9 @@ SUBROUTINE ISOLST ( IDXMOL, NISO, WGTISO )
     CASE ( 51 ) ; WGT => WGT51
     CASE ( 52 ) ; WGT => WGT52
     CASE ( 53 ) ; WGT => WGT53
-    CASE ( 54 ) ; WGT => WGT54
-    CASE ( 55 ) ; WGT => WGT55
-    CASE ( 56 ) ; WGT => WGT56
+!    CASE ( 54 ) ; WGT => WGT54
+!    CASE ( 55 ) ; WGT => WGT55
+!    CASE ( 56 ) ; WGT => WGT56
     CASE DEFAULT ; CONTINUE        ! Any other molecule index
   END SELECT
 !

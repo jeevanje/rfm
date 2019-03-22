@@ -1,13 +1,13 @@
-MODULE LUTDEF_SUB
+MODULE SVDDEF_SUB
 CONTAINS
-SUBROUTINE LUTDEF ( NAMDEF, FAIL, ERRMSG )
+SUBROUTINE SVDDEF ( NAMDEF, FAIL, ERRMSG )
 !
 ! VERSION
-!   20DEC17 AD F90 conversion.
+!   20DEC17 AD Adapted from LUTDEF.
 !
 ! DESCRIPTION
-!   Use default LUT filename to find any missing files
-!   Called once by DRVLUT if filename template found in *LUT section of 
+!   Use default SVD filename to find any missing files
+!   Called once by DRVSVD if filename template found in *SVD section of 
 !   driver table.
 !
 ! VARIABLE KINDS
@@ -17,12 +17,12 @@ SUBROUTINE LUTDEF ( NAMDEF, FAIL, ERRMSG )
     USE GASCOM_DAT ! Molecule and isotope data
     USE LENREC_DAT ! Max length of input text record
     USE SPCCOM_DAT ! Spectral range data
-    USE LFLCOM_DAT, ONLY: IDXLFL ! Indices of assigned LFL files
+    USE SFLCOM_DAT, ONLY: IDXSFL ! Indices of assigned SFL files
 !
 ! SUBROUTINES
     USE IDGOLD_FNC ! Convert new RFM index for .xsc data to old value
     USE LEXIST_FNC ! Check if file exists
-    USE LUTFIL_SUB ! Check if LUT file is required
+    USE SVDFIL_SUB ! Check if SVD file is required
     USE NAMGAS_FNC ! Return molecule name + (iso) associated with GASCOM index
     USE WRTLOG_SUB ! Write text message to log file
 !
@@ -37,27 +37,32 @@ SUBROUTINE LUTDEF ( NAMDEF, FAIL, ERRMSG )
     INTEGER(I4)       :: IGAS   ! Absorber counter
     INTEGER(I4)       :: IPT    ! Location of '*' character in NAMDEF
     INTEGER(I4)       :: ISPC   ! Counter for spectral ranges
-    CHARACTER(LENREC) :: NAMLUT ! Name of LUT file
+    CHARACTER(2)      :: IDSTR  ! String containing molecule index
+    CHARACTER(LENREC) :: NAMSVD ! Name of LUT file
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
-  CALL WRTLOG ( 'I-LUTDEF: Checking default LUT files' )
+  CALL WRTLOG ( 'I-SVDDEF: Checking default SVD files' )
 !
   IPT = INDEX ( NAMDEF, '*' )
-  IF ( IPT .EQ. 0 ) STOP 'F-LUTDEF: Logical error'
+  IF ( IPT .EQ. 0 ) STOP 'F-SVDDEF: Logical error'
 !      
   DO ISPC = 1, NSPC
     DO IGAS = 1, NGAS                           ! Loop over gases
-      IF ( IDXLFL(IGAS,ISPC) .GT. 0 ) CYCLE     ! LUT already found
+      IF ( IDXSFL(IGAS,ISPC) .GT. 0 ) CYCLE     ! SVD already found
 !
 ! At this point, spectral range/gas found requiring LUT data but no data loaded
-! Construct spec/gas part of LUT filename
-      NAMLUT = NAMDEF(1:IPT-1) // TRIM ( SPC(ISPC)%LAB ) // &
-                 TRIM ( NAMGAS(IGAS) ) // NAMDEF(IPT+1:)
+! Construct spec/gas part of SVD filename
 !
-      CALL WRTLOG ( 'I-LUTDEF: looking for file:' // NAMLUT )
-      IF ( LEXIST ( NAMLUT ) ) THEN
-        CALL LUTFIL ( NAMLUT, FAIL, ERRMSG )
+      WRITE ( IDSTR, '(I2.2)' ) IDGOLD ( GAS(IGAS)%IDM ) 
+! for historical reasons SF6 has ID=30 not 64 for MIPAS LUTs
+      IF ( IDSTR .EQ. '64' ) IDSTR = '30'
+      NAMSVD = NAMDEF(1:IPT-1) // TRIM ( SPC(ISPC)%LAB ) // '_' // & 
+               IDSTR // NAMDEF(IPT+1:)
+!
+      CALL WRTLOG ( 'I-SVDDEF: looking for file:' // NAMSVD )
+      IF ( LEXIST ( NAMSVD ) ) THEN
+        CALL SVDFIL ( NAMSVD, FAIL, ERRMSG )
         IF ( FAIL ) RETURN
       ELSE
         CALL WRTLOG ( '... file not found' )
@@ -65,5 +70,5 @@ SUBROUTINE LUTDEF ( NAMDEF, FAIL, ERRMSG )
     END DO
   END DO
 !
-END SUBROUTINE LUTDEF
-END MODULE LUTDEF_SUB
+END SUBROUTINE SVDDEF
+END MODULE SVDDEF_SUB

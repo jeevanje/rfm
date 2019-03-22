@@ -3,7 +3,8 @@ CONTAINS
 SUBROUTINE REAPAR ( EOF, FAIL, ERRMSG ) 
 !
 ! VERSION
-!   13JUN17 AD Original.
+!   04MAY18 AD Bug#5 correct Isotope#ID after reading as Z1
+!   17NOV17 AD Original.
 !
 ! DESCRIPTION
 !   Read record from HITRAN ASCII line parameter file
@@ -34,7 +35,11 @@ SUBROUTINE REAPAR ( EOF, FAIL, ERRMSG )
     LOGICAL,       INTENT(OUT) :: FAIL   ! Set TRUE if a fatal error is detected
     CHARACTER(80), INTENT(OUT) :: ERRMSG ! Error message written if FAIL is TRUE
 !
+! LOCAL CONSTANTS
+    INTEGER(I4), PARAMETER :: FIXIDI(0:15) = &
+              (/ 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16 /)
 ! LOCAL VARIABLES
+    INTEGER(I4) :: IDI   ! Isotope ID read from .par file
     INTEGER(I4) :: IGAS  ! Index of molecule in GASCOM
     INTEGER(I4) :: IOS   ! Saved value of IOSTAT for error messages
     REAL(R4)    :: TPROB ! Transition probability [Debyes2].
@@ -50,10 +55,11 @@ SUBROUTINE REAPAR ( EOF, FAIL, ERRMSG )
 ! Find next useful record in file. 
   DO 
     IRCHFL = IRCHFL + 1
-    READ ( LUNHIT, 1001, IOSTAT=IOS, ERR=900, END=900 ) HIT%IDM, HIT%IDI, &
+    READ ( LUNHIT, 1001, IOSTAT=IOS, ERR=900, END=900 ) HIT%IDM, IDI, &
       HIT%WNO, DSTR, TPROB, HIT%ABR, HIT%SBR, HIT%ELS, HIT%ABC, HIT%TSP
-1001 FORMAT( I2, I1, F12.6, F10.3, E10.3, F5.2, F5.2, F10.4, F4.1, F8.5 )
+1001 FORMAT( I2, Z1, F12.6, F10.3, E10.3, F5.2, F5.2, F10.4, F4.1, F8.5 )
     HIT%STR = SNGL ( DSTR * AVOG ) 
+    HIT%IDI = FIXIDI(IDI)    ! Convert to correct numbering
     WNOHFL = HIT%WNO
     IF ( IGSMOL(HIT%IDM) .EQ. 0 ) CYCLE
     IF ( .NOT. VALISO ( IGSMOL(HIT%IDM), HIT%IDI ) ) CYCLE

@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE ATMGRD ( LABEL, NLEV, PROFIL, PREGRD, FAIL, ERRMSG )
 !
 ! VERSION
-!   21JUN17 AD Original.
+!   21JUN17 AD Original. 
 !
 ! DESCRIPTION
 !   Set atmospheric profile vertical grid

@@ -1,6 +1,7 @@
 MODULE XSCCOM_DAT
 !
 ! VERSION
+!   08FEB19 AD Add NTRI.
 !   01MAY17 AD F90 version. Checked.
 !
 ! DESCRIPTION
@@ -20,10 +21,11 @@ MODULE XSCCOM_DAT
     INTEGER(I4)          :: IGS       ! Absorber index for XSC file
     INTEGER(I4)          :: NXP       ! Total no. abs.coeff values in dataset
     INTEGER(I4)          :: NXT       ! No.different (p,T) tabulations
+    INTEGER(I4)          :: NTRI      ! No. triangles
     REAL(R8)             :: WNL       ! Lower Wno limit [cm-1] of dataset
     REAL(R8)             :: WNU       ! Upper Wno limit [cm-1] of dataset
     INTEGER(I4), POINTER :: IOF(:)    ! [NXT] Offset for each (p,T) tabulation
-    INTEGER(I4), POINTER :: ITRI(:,:) ! [NXT-2,3] Vertices of triangulated data
+    INTEGER(I4), POINTER :: ITRI(:,:) ! [NTRI,3] Vertices of triangulated data
     INTEGER(I4), POINTER :: NPT(:)    ! [NXT] No.pts in each (p,T) tabulation
     REAL(R4),    POINTER :: ABS(:)    ! [NXP] Tabulated abs.coeffs [cm^2/molec]
     REAL(R4),    POINTER :: PRE(:)    ! [NXT] p [Torr] of each (p,T) tabulation

@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE INIPAR ( WNOREQ, FAIL, ERRMSG )
 !
 ! VERSION
-!   13JUN17 AD Original.
+!   13JUN17 AD Original. Checked.
 !
 ! DESCRIPTION    
 !   Initialise the HITRAN ASCII line parameter file

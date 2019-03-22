@@ -3,6 +3,9 @@ CONTAINS
 SUBROUTINE JACPTH
 !
 ! VERSION
+!   04FEB19 AD Allow for 'los' Jacobian
+!   30MAY18 AD Bug#7: Correct message listing no.new tan.paths
+!   02MAY18 AD Bug#1: Add JACFOV
 !   01MAY17 AD F90 conversion of rfmptb.for. Checked.
 !
 ! DESCRIPTION
@@ -25,6 +28,7 @@ SUBROUTINE JACPTH
     USE C11INT_FNC ! Write integer as left-adjusted string
     USE FLXPTH_SUB ! Set up paths for flux calculations
     USE HOMPTH_SUB ! Set Homogeneous paths
+    USE JACFOV_SUB ! Assign tan paths for Jacobians after FOV convolution
     USE JTPPTH_FNC ! T=path corresponds to Jacobian Tan.Pt perturbation
     USE LIMPTH_SUB ! Set Limb-viewing paths
     USE PTBATM_SUB ! Perturb/unperturb atmospheric profiles for Jacobian calc
@@ -100,7 +104,7 @@ SUBROUTINE JACPTH
         END IF
       END DO  
     CASE DEFAULT
-      STOP 'F-JACPTH: Logical error'
+      IF ( JAC(IJAC)%COD .NE. 'los' ) STOP 'F-JACPTH: Logical error'
     END SELECT
   END DO
 !
@@ -111,9 +115,12 @@ SUBROUTINE JACPTH
   CALL MOVE_ALLOC ( NEWPTH, PTH ) 
   NPTH = MPTH
 !
+! Ensure tan paths are assigned after FOV convolution
+  IF ( FOVFLG ) CALL JACFOV
+!
 ! Construct info message detailing no.tangent paths required
-  MESSGE = 'I-JACPTH: ' // TRIM ( C11INT(MTAN-LTAN) ) // & 
-           ' extra tan.paths reqd for Jac.Calcs. New total=' // C11INT(LTAN) 
+  MESSGE = 'I-JACPTH: ' // TRIM ( C11INT(MTAN-NTNJAC) ) // & 
+           ' extra tan.paths reqd for Jac.Calcs. New total=' // C11INT(MTAN) 
   CALL WRTLOG ( MESSGE )
 !
   MESSGE = 'I-JACPTH: ' // TRIM ( C11INT(NCLC-LCLC) ) // & 

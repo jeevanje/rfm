@@ -1,7 +1,22 @@
 PROGRAM RFM
 !
 ! VERSION (update VIDHDR)
-!   02OCT17 AD v5.0 F90 conversion. Tested.
+!   08FEB19 AD Bug#16
+!   04FEB19 AD Bug#14,15
+!   14JAN19 AD Bug#13
+!   30NOV18 AD Bug#12
+!   21NOV18 AD Bug#11
+!   02NOV18 AD New H2O continuum model 
+!   12OCT18 AD Bug#10
+!   28JUN18 AD Bug#9
+!   01JUN18 AD v5.01
+!   31MAY18 AD Bug#8
+!   31MAY18 AD Bug#7
+!   10MAY18 AD Redefine molecules#48,#50-53
+!   05MAY18 AD Bug#6
+!   04MAY18 AD Bug#3, Bug#4, Bug#5
+!   02MAY18 AD Bug#1, Bug#2
+!   29JAN18 AD v5.00 F90 version. Tested.
 !
 ! DESCRIPTION
 !   Reference Forward Model
@@ -39,7 +54,7 @@ PROGRAM RFM
 !
 ! EXECUTABLE CODE -------------------------------------------------------------
 !
-  VIDHDR = '02OCT17_NJ'
+  VIDHDR = '5.02_08FEB'
   LOGMSG = 'R-RFM: Running RFM v' // VIDHDR    
   WRITE ( *, '(A)' ) LOGMSG
 !

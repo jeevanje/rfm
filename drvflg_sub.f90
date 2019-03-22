@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE DRVFLG ( LUNDRV, FAIL, ERRMSG )
 !
 ! VERSION
-!   01JUN17 AD F90 conversion of inpflg.for. Checked.
+!   20DEC17 AD F90 conversion of inpflg.for. Checked.
 !
 ! DESCRIPTION
 !   Read RFM driver table *FLG section
@@ -114,6 +114,7 @@ SUBROUTINE DRVFLG ( LUNDRV, FAIL, ERRMSG )
       CASE ( 'SFC' ) ; SFCFLG = .TRUE.
       CASE ( 'SHH' ) ; SHHFLG = .TRUE.
       CASE ( 'SHP' ) ; SHPFLG = .TRUE.
+      CASE ( 'SVD' ) ; SVDFLG = .TRUE.
       CASE ( 'TAB' ) ; TABFLG = .TRUE.
       CASE ( 'TRA' ) ; TRAFLG = .TRUE.
       CASE ( 'VRT' ) ; VRTFLG = .TRUE.

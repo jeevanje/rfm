@@ -1,7 +1,7 @@
 MODULE LFLCOM_DAT
 !
 ! VERSION
-!   01MAY17 AD F90 conversion. Checked.
+!   19DEC17 AD F90 conversion. 
 !
 ! DESCRIPTION
 !   Look-Up Table files
@@ -18,12 +18,11 @@ MODULE LFLCOM_DAT
   SAVE
 !
   TYPE :: LFLTYP
+    LOGICAL           :: BIN ! T=binary file, F=ASCII
     INTEGER(I4)       :: IGS ! Absorber index
     INTEGER(I4)       :: LUN ! LUN assigned to TAB LUT files
     INTEGER(I4)       :: NDP ! Undersampling factor for p-axis (1=default)
     INTEGER(I4)       :: NDT ! Undersampling factor for T-axis (1=default)
-    INTEGER(I4)       :: NL  ! No. S.Vs qualifier (0=not defined)
-    CHARACTER(3)      :: TYP ! LUT type 'ASC', 'BIN' or 'SVD'
     CHARACTER(LENREC) :: NAM ! Name of LUT file
   END TYPE LFLTYP
 !

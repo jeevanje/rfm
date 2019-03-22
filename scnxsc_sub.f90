@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE SCNXSC ( LUN, MOLEC, NSPC, WMIN, WMAX, NTAB, FAIL, ERRMSG )
 !
 ! VERSION
-!   21JUN17 AD Original.
+!   21JUN17 AD Original. Checked.
 !
 ! DESCRIPTION
 !   Scan HITRAN format .xsc file

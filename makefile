@@ -5,6 +5,7 @@
 # Edit next 2 lines to change compiler and options
 F90 = ifort
 #FLAGS = -fbounds-check -Wall
+# if you don't need any flags, just change to: FLAGS = 
 
 # change anything beyond this point and you're on your own!
 
@@ -126,8 +127,8 @@ atmlev_sub.o atmlev_sub.mod : atmlev_sub.f90 kind_dat.mod atmcom_dat.mod \
           addatm_sub.mod c11int_fnc.mod c9real_gen.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
-atmpar_sub.o atmpar_sub.mod : atmpar_sub.f90 kind_dat.mod atmprf_sub.mod \
-          wrtlog_sub.mod atmcom_dat.mod
+atmpar_sub.o atmpar_sub.mod : atmpar_sub.f90 kind_dat.mod atmcom_dat.mod \
+          flgcom_dat.mod atmini_sub.mod atmprf_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 atmprf_sub.o atmprf_sub.mod : atmprf_sub.f90 kind_dat.mod atmcom_dat.mod \
@@ -164,7 +165,7 @@ chishp_sub.o chishp_sub.mod : chishp_sub.f90 kind_dat.mod adjcom_dat.mod \
 	$(F90) $< -c $(FLAGS)
 
 chkabs_sub.o chkabs_sub.mod : chkabs_sub.f90 kind_dat.mod gascom_dat.mod \
-          lflcom_dat.mod
+          lflcom_dat.mod sflcom_dat.mod spccom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 chkco2_sub.o chkco2_sub.mod : chkco2_sub.f90 kind_dat.mod flgcom_dat.mod \
@@ -251,6 +252,10 @@ clccom_dat.o clccom_dat.mod : clccom_dat.f90 kind_dat.mod
 
 coowgt_sub.o coowgt_sub.mod : coowgt_sub.f90 kind_dat.mod atmcom_dat.mod \
           phycon_dat.mod phyadj_dat.mod
+	$(F90) $< -c $(FLAGS)
+
+ctmc25_sub.o ctmc25_sub.mod : ctmc25_sub.f90 kind_dat.mod clccom_dat.mod \
+          h2oc25_dat.mod widcom_dat.mod phycon_dat.mod lkpidx_fnc.mod
 	$(F90) $< -c $(FLAGS)
 
 ctmckd_sub.o ctmckd_sub.mod : ctmckd_sub.f90 kind_dat.mod clccom_dat.mod \
@@ -396,6 +401,10 @@ drvobs_sub.o drvobs_sub.mod : drvobs_sub.f90 kind_dat.mod lenrec_dat.mod \
           nxtfld_sub.mod obschk_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
+drvout_sub.o drvout_sub.mod : drvout_sub.f90 kind_dat.mod lenrec_dat.mod \
+          namcom_dat.mod nxtrec_sub.mod parfld_sub.mod wrtlog_sub.mod
+	$(F90) $< -c $(FLAGS)
+
 drvphy_sub.o drvphy_sub.mod : drvphy_sub.f90 kind_dat.mod phyadj_dat.mod \
           lenrec_dat.mod nxtrec_sub.mod parfld_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
@@ -426,9 +435,14 @@ drvspc_sub.o drvspc_sub.mod : drvspc_sub.f90 kind_dat.mod flgcom_dat.mod \
           spclab_sub.mod spctxt_sub.mod txtfld_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
+drvsvd_sub.o drvsvd_sub.mod : drvsvd_sub.f90 kind_dat.mod lenrec_dat.mod \
+          sflcom_dat.mod gascom_dat.mod spccom_dat.mod svdfil_sub.mod \
+          svddef_sub.mod nxtfld_sub.mod wrtlog_sub.mod
+	$(F90) $< -c $(FLAGS)
+
 drvtan_sub.o drvtan_sub.mod : drvtan_sub.f90 kind_dat.mod flgcom_dat.mod \
           lenrec_dat.mod tancom_dat.mod nxtffl_sub.mod tanchk_sub.mod \
-          tanflx_sub.mod tanmtx_sub.mod wrtlog_sub.mod
+          tanflx_sub.mod tanlos_sub.mod tanmtx_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 drvxsc_sub.o drvxsc_sub.mod : drvxsc_sub.f90 kind_dat.mod lenrec_dat.mod \
@@ -534,6 +548,9 @@ grdfil_sub.o grdfil_sub.mod : grdfil_sub.f90 kind_dat.mod spccom_dat.mod \
           wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
+h2oc25_dat.o h2oc25_dat.mod : h2oc25_dat.f90 kind_dat.mod
+	$(F90) $< -c $(FLAGS)
+
 h2ockd_dat.o h2ockd_dat.mod : h2ockd_dat.f90 kind_dat.mod
 	$(F90) $< -c $(FLAGS)
 
@@ -543,7 +560,7 @@ h2omtc_dat.o h2omtc_dat.mod : h2omtc_dat.f90 kind_dat.mod
 hflcom_dat.o hflcom_dat.mod : hflcom_dat.f90 kind_dat.mod
 	$(F90) $< -c $(FLAGS)
 
-hgtstr_fnc.o hgtstr_fnc.mod : hgtstr_fnc.f90 kind_dat.mod
+hgtstr_fnc.o hgtstr_fnc.mod : hgtstr_fnc.f90 kind_dat.mod tancom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 hitchk_sub.o hitchk_sub.mod : hitchk_sub.f90 kind_dat.mod gascom_dat.mod \
@@ -616,8 +633,7 @@ inilbl_sub.o inilbl_sub.mod : inilbl_sub.f90 kind_dat.mod clccom_dat.mod \
 	$(F90) $< -c $(FLAGS)
 
 inilut_sub.o inilut_sub.mod : inilut_sub.f90 kind_dat.mod gascom_dat.mod \
-          lflcom_dat.mod lutcom_dat.mod svdcom_dat.mod rfmlun_dat.mod \
-          lutsvd_sub.mod luttab_sub.mod
+          lflcom_dat.mod lutcom_dat.mod rfmlun_dat.mod luttab_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 inipar_sub.o inipar_sub.mod : inipar_sub.f90 kind_dat.mod hflcom_dat.mod \
@@ -626,6 +642,10 @@ inipar_sub.o inipar_sub.mod : inipar_sub.f90 kind_dat.mod hflcom_dat.mod \
 
 inistt_sub.o inistt_sub.mod : inistt_sub.f90 kind_dat.mod spccom_dat.mod \
           sttcom_dat.mod widcom_dat.mod gascom_dat.mod
+	$(F90) $< -c $(FLAGS)
+
+inisvd_sub.o inisvd_sub.mod : inisvd_sub.f90 kind_dat.mod gascom_dat.mod \
+          sflcom_dat.mod svdcom_dat.mod rfmlun_dat.mod reasvd_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 interp_gen.o interp_gen.mod : interp_gen.f90 kind_dat.mod val1di_gen.mod
@@ -647,6 +667,10 @@ jacalt_sub.o jacalt_sub.mod : jacalt_sub.f90 kind_dat.mod atmcom_dat.mod \
 jaccom_dat.o jaccom_dat.mod : jaccom_dat.f90 kind_dat.mod
 	$(F90) $< -c $(FLAGS)
 
+jacfov_sub.o jacfov_sub.mod : jacfov_sub.f90 kind_dat.mod fovcom_dat.mod \
+          jaccom_dat.mod tancom_dat.mod addtan_sub.mod
+	$(F90) $< -c $(FLAGS)
+
 jaciso_sub.o jaciso_sub.mod : jaciso_sub.f90 kind_dat.mod lflcom_dat.mod \
           addgas_sub.mod addvmr_sub.mod idxgas_fnc.mod
 	$(F90) $< -c $(FLAGS)
@@ -654,8 +678,8 @@ jaciso_sub.o jaciso_sub.mod : jaciso_sub.f90 kind_dat.mod lflcom_dat.mod \
 jacpth_sub.o jacpth_sub.mod : jacpth_sub.f90 kind_dat.mod flgcom_dat.mod \
           jaccom_dat.mod pthcom_dat.mod tancom_dat.mod clccom_dat.mod \
           addpth_sub.mod addtan_sub.mod c11int_fnc.mod flxpth_sub.mod \
-          hompth_sub.mod jtppth_fnc.mod limpth_sub.mod ptbatm_sub.mod \
-          vrtpth_sub.mod wrtlog_sub.mod
+          hompth_sub.mod jacfov_sub.mod jtppth_fnc.mod limpth_sub.mod \
+          ptbatm_sub.mod vrtpth_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 jactan_sub.o jactan_sub.mod : jactan_sub.f90 kind_dat.mod tancom_dat.mod \
@@ -721,17 +745,12 @@ lutfil_sub.o lutfil_sub.mod : lutfil_sub.f90 kind_dat.mod lflcom_dat.mod \
           namgas_fnc.mod reaqal_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
-lutinf_sub.o lutinf_sub.mod : lutinf_sub.f90 kind_dat.mod svdinf_sub.mod \
-          tabinf_sub.mod
+lutinf_sub.o lutinf_sub.mod : lutinf_sub.f90 kind_dat.mod phycon_dat.mod \
+          wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 lutpth_sub.o lutpth_sub.mod : lutpth_sub.f90 kind_dat.mod clccom_dat.mod \
           lutcom_dat.mod atmcom_dat.mod lutwgt_sub.mod
-	$(F90) $< -c $(FLAGS)
-
-lutsvd_sub.o lutsvd_sub.mod : lutsvd_sub.f90 kind_dat.mod svdcom_dat.mod \
-          idxgas_fnc.mod svdgrd_sub.mod svdhdr_sub.mod svdlim_sub.mod \
-          svdpth_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 luttab_sub.o luttab_sub.mod : luttab_sub.f90 kind_dat.mod lutcom_dat.mod \
@@ -971,6 +990,11 @@ reaspc_sub.o reaspc_sub.mod : reaspc_sub.f90 kind_dat.mod grdcom_dat.mod \
           fincom_dat.mod phycon_dat.mod rfmlun_dat.mod
 	$(F90) $< -c $(FLAGS)
 
+reasvd_sub.o reasvd_sub.mod : reasvd_sub.f90 kind_dat.mod svdcom_dat.mod \
+          idxgas_fnc.mod svdgrd_sub.mod svdhdr_sub.mod svdlim_sub.mod \
+          svdpth_sub.mod wrtlog_sub.mod
+	$(F90) $< -c $(FLAGS)
+
 reaxsc_sub.o reaxsc_sub.mod : reaxsc_sub.f90 kind_dat.mod xsccom_dat.mod \
           triang_sub.mod
 	$(F90) $< -c $(FLAGS)
@@ -1001,9 +1025,10 @@ rfmdrv_sub.o rfmdrv_sub.mod : rfmdrv_sub.f90 rfmlun_dat.mod drvatm_sub.mod \
           drvflg_sub.mod drvfov_sub.mod drvgas_sub.mod drvgrd_sub.mod \
           drvhdr_sub.mod drvhit_sub.mod drvils_sub.mod drvjac_sub.mod \
           drvkey_sub.mod drvlev_sub.mod drvlut_sub.mod drvnam_sub.mod \
-          drvnte_sub.mod drvobs_sub.mod drvphy_sub.mod drvrej_sub.mod \
-          drvsfc_sub.mod drvshp_sub.mod drvskp_sub.mod drvspc_sub.mod \
-          drvtan_sub.mod drvxsc_sub.mod opnfil_sub.mod
+          drvnte_sub.mod drvobs_sub.mod drvout_sub.mod drvphy_sub.mod \
+          drvrej_sub.mod drvsfc_sub.mod drvshp_sub.mod drvskp_sub.mod \
+          drvspc_sub.mod drvsvd_sub.mod drvtan_sub.mod drvxsc_sub.mod \
+          opnfil_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 rfmlun_dat.o rfmlun_dat.mod : rfmlun_dat.f90 kind_dat.mod
@@ -1025,9 +1050,9 @@ rfmspc_sub.o rfmspc_sub.mod : rfmspc_sub.f90 kind_dat.mod flgcom_dat.mod \
           spccia_sub.mod spcctm_sub.mod spcdal_sub.mod spcfin_sub.mod \
           spcflx_sub.mod spcful_sub.mod spcfov_sub.mod spcgrd_sub.mod \
           spcils_sub.mod spcini_sub.mod spcint_sub.mod spcjac_sub.mod \
-          spclos_sub.mod spclut_sub.mod spcout_sub.mod spcrad_sub.mod \
-          spcrex_sub.mod spcsvd_sub.mod spctab_sub.mod spcwid_sub.mod \
-          spcwng_sub.mod spcxsc_sub.mod
+          spclut_sub.mod spcout_sub.mod spcrad_sub.mod spcrex_sub.mod \
+          spcsvd_sub.mod spctab_sub.mod spcwid_sub.mod spcwng_sub.mod \
+          spcxsc_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 rfrval_fnc.o rfrval_fnc.mod : rfrval_fnc.f90 kind_dat.mod atmcom_dat.mod \
@@ -1053,7 +1078,10 @@ sfcems_sub.o sfcems_sub.mod : sfcems_sub.f90 kind_dat.mod sfccom_dat.mod \
 	$(F90) $< -c $(FLAGS)
 
 sfclev_sub.o sfclev_sub.mod : sfclev_sub.f90 kind_dat.mod atmcom_dat.mod \
-          addatm_sub.mod c9real_gen.mod wrtlog_sub.mod
+          tancom_dat.mod addatm_sub.mod c9real_gen.mod wrtlog_sub.mod
+	$(F90) $< -c $(FLAGS)
+
+sflcom_dat.o sflcom_dat.mod : sflcom_dat.f90 kind_dat.mod lenrec_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 sgnarr_gen.o sgnarr_gen.mod : sgnarr_gen.f90 kind_dat.mod
@@ -1081,8 +1109,9 @@ spccom_dat.o spccom_dat.mod : spccom_dat.f90 kind_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 spcctm_sub.o spcctm_sub.mod : spcctm_sub.f90 kind_dat.mod clccom_dat.mod \
-          gascom_dat.mod idxcon_dat.mod ctmckd_sub.mod ctmco2_sub.mod \
-          ctmh2o_sub.mod ctmn2_sub.mod ctmo2_sub.mod
+          gascom_dat.mod idxcon_dat.mod widcom_dat.mod ctmc25_sub.mod \
+          ctmckd_sub.mod ctmco2_sub.mod ctmh2o_sub.mod ctmn2_sub.mod \
+          ctmo2_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 spcdal_sub.o spcdal_sub.mod : spcdal_sub.f90 kind_dat.mod lutcom_dat.mod \
@@ -1125,8 +1154,9 @@ spcils_sub.o spcils_sub.mod : spcils_sub.f90 kind_dat.mod fulcom_dat.mod \
 	$(F90) $< -c $(FLAGS)
 
 spcini_sub.o spcini_sub.mod : spcini_sub.f90 kind_dat.mod flgcom_dat.mod \
-          spccom_dat.mod widcom_dat.mod fulcom_dat.mod rfmcon_dat.mod \
-          inilbl_sub.mod inilut_sub.mod inistt_sub.mod widmix_sub.mod
+          gascom_dat.mod spccom_dat.mod widcom_dat.mod fulcom_dat.mod \
+          rfmcon_dat.mod inilbl_sub.mod inilut_sub.mod inistt_sub.mod \
+          inisvd_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 spcint_sub.o spcint_sub.mod : spcint_sub.f90 kind_dat.mod fulcom_dat.mod \
@@ -1134,14 +1164,14 @@ spcint_sub.o spcint_sub.mod : spcint_sub.f90 kind_dat.mod fulcom_dat.mod \
 	$(F90) $< -c $(FLAGS)
 
 spcjac_sub.o spcjac_sub.mod : spcjac_sub.f90 kind_dat.mod fulcom_dat.mod \
-          jaccom_dat.mod
+          jaccom_dat.mod tancom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 spclab_sub.o spclab_sub.mod : spclab_sub.f90 kind_dat.mod spccom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
-spclos_sub.o spclos_sub.mod : spclos_sub.f90 kind_dat.mod ptbcon_dat.mod \
-          fulcom_dat.mod jaccom_dat.mod tancom_dat.mod
+spclos_fnc.o spclos_fnc.mod : spclos_fnc.f90 kind_dat.mod ptbcon_dat.mod \
+          fulcom_dat.mod tancom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 spclut_sub.o spclut_sub.mod : spclut_sub.f90 kind_dat.mod clccom_dat.mod \
@@ -1150,8 +1180,8 @@ spclut_sub.o spclut_sub.mod : spclut_sub.f90 kind_dat.mod clccom_dat.mod \
 
 spcout_sub.o spcout_sub.mod : spcout_sub.f90 kind_dat.mod flgcom_dat.mod \
           fulcom_dat.mod jaccom_dat.mod levcom_dat.mod namcom_dat.mod \
-          phycon_dat.mod tancom_dat.mod bright_fnc.mod spcwrt_sub.mod \
-          wrtstt_sub.mod
+          phycon_dat.mod tancom_dat.mod bright_fnc.mod spclos_fnc.mod \
+          spcwrt_sub.mod wrtstt_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 spcrad_sub.o spcrad_sub.mod : spcrad_sub.f90 kind_dat.mod fincom_dat.mod \
@@ -1218,6 +1248,16 @@ subaxs_sub.o subaxs_sub.mod : subaxs_sub.f90 kind_dat.mod tabcom_dat.mod \
 svdcom_dat.o svdcom_dat.mod : svdcom_dat.f90 kind_dat.mod
 	$(F90) $< -c $(FLAGS)
 
+svddef_sub.o svddef_sub.mod : svddef_sub.f90 kind_dat.mod gascom_dat.mod \
+          lenrec_dat.mod spccom_dat.mod sflcom_dat.mod idgold_fnc.mod \
+          lexist_fnc.mod svdfil_sub.mod namgas_fnc.mod wrtlog_sub.mod
+	$(F90) $< -c $(FLAGS)
+
+svdfil_sub.o svdfil_sub.mod : svdfil_sub.f90 kind_dat.mod sflcom_dat.mod \
+          spccom_dat.mod idxgas_fnc.mod svdinf_sub.mod namgas_fnc.mod \
+          reaqal_sub.mod wrtlog_sub.mod
+	$(F90) $< -c $(FLAGS)
+
 svdgrd_sub.o svdgrd_sub.mod : svdgrd_sub.f90 kind_dat.mod fulcom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
@@ -1225,8 +1265,8 @@ svdhdr_sub.o svdhdr_sub.mod : svdhdr_sub.f90 kind_dat.mod idgnew_fnc.mod \
           upcase_fnc.mod
 	$(F90) $< -c $(FLAGS)
 
-svdinf_sub.o svdinf_sub.mod : svdinf_sub.f90 kind_dat.mod svdhdr_sub.mod \
-          wrtlog_sub.mod
+svdinf_sub.o svdinf_sub.mod : svdinf_sub.f90 kind_dat.mod rfmlun_dat.mod \
+          svdhdr_sub.mod wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 svdlim_sub.o svdlim_sub.mod : svdlim_sub.f90 kind_dat.mod c11int_fnc.mod \
@@ -1250,10 +1290,6 @@ tabcom_dat.o tabcom_dat.mod : tabcom_dat.f90 kind_dat.mod
 
 tabhdr_sub.o tabhdr_sub.mod : tabhdr_sub.f90 kind_dat.mod fulcom_dat.mod \
           gascom_dat.mod hdrcom_dat.mod tabcom_dat.mod
-	$(F90) $< -c $(FLAGS)
-
-tabinf_sub.o tabinf_sub.mod : tabinf_sub.f90 kind_dat.mod phycon_dat.mod \
-          wrtlog_sub.mod
 	$(F90) $< -c $(FLAGS)
 
 tabpth_sub.o tabpth_sub.mod : tabpth_sub.f90 kind_dat.mod clccom_dat.mod \
@@ -1284,6 +1320,10 @@ tanflx_sub.o tanflx_sub.mod : tanflx_sub.f90 kind_dat.mod qadcom_dat.mod \
 
 tanitr_sub.o tanitr_sub.mod : tanitr_sub.f90 kind_dat.mod atmcom_dat.mod \
           flgcom_dat.mod phyadj_dat.mod dshval_fnc.mod rfrval_fnc.mod
+	$(F90) $< -c $(FLAGS)
+
+tanlos_sub.o tanlos_sub.mod : tanlos_sub.f90 kind_dat.mod jaccom_dat.mod \
+          flgcom_dat.mod tancom_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 tanmtx_sub.o tanmtx_sub.mod : tanmtx_sub.f90 kind_dat.mod levcom_dat.mod \
@@ -1361,9 +1401,6 @@ vvwshp_sub.o vvwshp_sub.mod : vvwshp_sub.f90 kind_dat.mod adjcom_dat.mod \
 	$(F90) $< -c $(FLAGS)
 
 widcom_dat.o widcom_dat.mod : widcom_dat.f90 kind_dat.mod
-	$(F90) $< -c $(FLAGS)
-
-widmix_sub.o widmix_sub.mod : widmix_sub.f90 kind_dat.mod mixdat_dat.mod
 	$(F90) $< -c $(FLAGS)
 
 widstt_sub.o widstt_sub.mod : widstt_sub.f90 kind_dat.mod sttcom_dat.mod

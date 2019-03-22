@@ -3,7 +3,9 @@ CONTAINS
 SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
 !
 ! VERSION
-!   01JUN17 AD F90 original. Checked.
+!   04FEB19 AD Add SPCLOS to calculate LOS Jacobians
+!   31JAN19 AD Fix Bug#14 - suppress off-diagonal outputs with JTP flag
+!   08NOV17 AD F90 original. Checked.
 !
 ! DESCRIPTION
 !   Write spectral output data
@@ -23,6 +25,7 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
 !
 ! SUBROUTINES
     USE BRIGHT_FNC ! Brightness Temperature calculation
+    USE SPCLOS_FNC ! Calculate LOS Jacobian spectrum
     USE SPCWRT_SUB ! Write spectral data file
     USE WRTSTT_SUB ! Write widemesh statistics
 !
@@ -69,21 +72,27 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
         IF ( NJAC .GT. 0 ) THEN
           IJAC = ISEC
           JTAN = ITNJAC(ITAN,IJAC)
+          IF ( JAC(IJAC)%COD .EQ. 'los' ) JTAN = -1 
         ELSE
           ILEV = ISEC
           JTAN = ITNLEV(ITAN,ILEV)
         END IF
         IF ( JTAN .EQ. 0 .AND. NOZERO ) CYCLE  ! No sec. output for this tan
+        IF ( JTPFLG .AND. JTAN .NE. -1 ) THEN
+          IF ( JAC(IJAC)%ITN .NE. ITAN ) CYCLE ! Only tan.pt Jacobians
+        END IF
       END IF
 !
       IF ( ABSFLG ) THEN
         IF ( JTAN .EQ. 0 ) THEN
           SPCFUL = 0.0D0
+        ELSE IF ( JTAN .EQ. -1 ) THEN
+          SPCFUL = 1.0D0 - SPCLOS ( ITAN, 'TRA' ) 
         ELSE
           SPCFUL = 1.0D0 - TRAFUL(:,JTAN)
         END IF
         SPCPTR => SPCFUL
-        CALL SPCWRT ( NAMABS, 'ABS', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( ABSNAM, 'ABS', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF
@@ -92,6 +101,9 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
         IF ( IJAC .GT. 0 ) THEN
           IF ( JTAN .EQ. 0 ) THEN
             SPCFUL = 0.0D0
+          ELSE IF ( JTAN .EQ. -1 ) THEN
+            SPCFUL = BRIGHT ( SPCLOS(ITAN,'RAD') + RADFUL(:,ITAN), WNOFUL ) - &
+                     BRIGHT ( RADFUL(:,ITAN), WNOFUL )  
           ELSE
             SPCFUL = BRIGHT ( RADFUL(:,JTAN) + RADFUL(:,ITAN), WNOFUL ) - &
                      BRIGHT ( RADFUL(:,ITAN), WNOFUL )
@@ -100,14 +112,14 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
           SPCFUL = BRIGHT ( RADFUL(:,JTAN), WNOFUL ) 
         END IF
         SPCPTR => SPCFUL
-        CALL SPCWRT ( NAMBBT, 'BBT', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( BBTNAM, 'BBT', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF
 !
       IF ( COOFLG ) THEN
         SPCPTR => COOFUL(:,JTAN)
-        CALL SPCWRT ( NAMCOO, 'COO', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( COONAM, 'COO', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF
@@ -116,26 +128,31 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
         IF ( JTAN .EQ. 0 ) THEN
           SPCFUL = 0.0D0
           SPCPTR => SPCFUL
+        ELSE IF ( JTAN .EQ. -1 ) THEN
+          SPCFUL = SPCLOS ( ITAN, 'OPT' )
+          SPCPTR => SPCFUL
         ELSE
           SPCPTR => OPTFUL(:,JTAN)
         END IF
-        CALL SPCWRT ( NAMOPT, 'OPT', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( OPTNAM, 'OPT', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF
 !
       IF ( RADFLG ) THEN
-! For radiance flux, convert nW/cm2 to W/m2 
         IF ( JTAN .EQ. 0 ) THEN
           SPCFUL = 0.0
           SPCPTR => SPCFUL
+        ELSE IF ( JTAN .EQ. -1 ) THEN
+          SPCFUL = SPCLOS ( ITAN, 'RAD' )
+          SPCPTR => SPCFUL
         ELSE IF ( FLXFLG .AND. .NOT. VRTFLG ) THEN
-          SPCFUL = RADFUL(:,JTAN) * 1.0E-5 
+          SPCFUL = RADFUL(:,JTAN) * 1.0E-5   ! Rad.flux: convert nW/cm2 to W/m2 
           SPCPTR => SPCFUL
         ELSE
           SPCPTR => RADFUL(:,JTAN)
         END IF
-        CALL SPCWRT ( NAMRAD, 'RAD', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( RADNAM, 'RAD', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF
@@ -143,11 +160,13 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
       IF ( RJTFLG ) THEN
         IF ( JTAN .EQ. 0 ) THEN
           SPCFUL = 0.0
+        ELSE IF ( JTAN .EQ. -1 ) THEN
+          SPCFUL = C2 * SPCLOS ( ITAN, 'RAD' ) / C1 / WNOFUL**2
         ELSE
           SPCFUL = C2 * RADFUL(:,JTAN) / C1 / WNOFUL**2
         END IF
         SPCPTR => SPCFUL
-        CALL SPCWRT ( NAMRJT, 'RJT', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( RJTNAM, 'RJT', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF
@@ -156,10 +175,13 @@ SUBROUTINE SPCOUT ( ISPC, FAIL, ERRMSG )
         IF ( JTAN .EQ. 0 ) THEN
           SPCFUL = 0
           SPCPTR => SPCFUL
+        ELSE IF ( JTAN .EQ. -1 ) THEN
+          SPCFUL = SPCLOS ( ITAN, 'TRA' ) 
+          SPCPTR => SPCFUL
         ELSE
           SPCPTR => TRAFUL(:,JTAN)
         END IF
-        CALL SPCWRT ( NAMTRA, 'TRA', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
+        CALL SPCWRT ( TRANAM, 'TRA', ISPC, ITAN, IJAC, ILEV, NFUL, IRRFUL, &
                       WNOFUL, SPCPTR, FAIL, ERRMSG ) 
         IF ( FAIL ) RETURN
       END IF

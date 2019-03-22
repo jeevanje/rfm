@@ -3,7 +3,7 @@ CONTAINS
 SUBROUTINE DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
 !
 ! VERSION
-!   01MAY17 AD F90 conversion of inpnam.for. Tested
+!   08NOV17 AD F90 conversion of inpnam.for. Tested
 !
 ! DESCRIPTION
 !   Read RFM driver table user-defined filename
@@ -31,12 +31,12 @@ SUBROUTINE DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
 !
 ! LOCAL VARIABLES
     INTEGER(I4)       :: LENGTH ! No.characters in FIELD
-    CHARACTER(LENREC) :: NAMFIL ! Field read from driver table
+    CHARACTER(LENREC) :: FILNAM ! Field read from driver table
 !
 ! EXECUTABLE CODE --------------------------------------------------------------
 !
 ! Read first and only expected field in driver table section
-  CALL NXTFLD ( LUNDRV, NAMFIL, LENGTH, FAIL, ERRMSG )
+  CALL NXTFLD ( LUNDRV, FILNAM, LENGTH, FAIL, ERRMSG )
   IF ( FAIL ) RETURN
   IF ( LENGTH .EQ. 0 ) THEN
     FAIL = .TRUE.
@@ -49,21 +49,21 @@ SUBROUTINE DRVNAM ( LUNDRV, KEY, FAIL, ERRMSG )
   END IF
 !
   CALL WRTLOG ( 'I-DRVNAM: User-supplied ' // KEY(2:4) // ' filename: ' &
-                // NAMFIL )
+                // FILNAM )
 !
 ! Save as appropriate common variable in outcom.inc
   SELECT CASE ( KEY ) 
-  CASE ( '*ABS' ) ; NAMABS = NAMFIL
-  CASE ( '*BBT' ) ; NAMBBT = NAMFIL
-  CASE ( '*COO' ) ; NAMCOO = NAMFIL
-  CASE ( '*OPT' ) ; NAMOPT = NAMFIL
-  CASE ( '*PRF' ) ; NAMPRF = NAMFIL
-  CASE ( '*PTH' ) ; NAMPTH = NAMFIL
-  CASE ( '*RAD' ) ; NAMRAD = NAMFIL
-  CASE ( '*RJT' ) ; NAMRJT = NAMFIL
-  CASE ( '*TAB' ) ; NAMTAB = NAMFIL
-  CASE ( '*TRA' ) ; NAMTRA = NAMFIL
-  CASE ( '*WID' ) ; NAMWID = NAMFIL
+  CASE ( '*ABS' ) ; ABSNAM = FILNAM
+  CASE ( '*BBT' ) ; BBTNAM = FILNAM
+  CASE ( '*COO' ) ; COONAM = FILNAM
+  CASE ( '*OPT' ) ; OPTNAM = FILNAM
+  CASE ( '*PRF' ) ; PRFNAM = FILNAM
+  CASE ( '*PTH' ) ; PTHNAM = FILNAM
+  CASE ( '*RAD' ) ; RADNAM = FILNAM
+  CASE ( '*RJT' ) ; RJTNAM = FILNAM
+  CASE ( '*TAB' ) ; TABNAM = FILNAM
+  CASE ( '*TRA' ) ; TRANAM = FILNAM
+  CASE ( '*WID' ) ; WIDNAM = FILNAM
   CASE DEFAULT 
     WRITE (*,*) 'F-DRVNAM: Unrecognised KEY=' // KEY
     STOP 'F-DRVNAM: Logical Error'
